@@ -1,45 +1,70 @@
-"""Generyczny proces - przykład integracji z konfiguracją i logowaniem."""
+"""Implementacja silnika Text-to-Speech."""
 
-from lib.config import get_config
-from lib.logging import get_logger
+from typing import Dict, Any, Optional, Protocol
 
-class Process:
-    """Bazowa klasa procesu."""
 
-    @staticmethod
-    def get_parameters_schema():
-        return {
-            "type": "object",
-            "properties": {
-                "input": {
-                    "type": "string",
-                    "description": "Dane wejściowe dla procesu"
-                }
-            },
-            "required": ["input"]
-        }
+class Engine(Protocol):
+    """Protokół dla silnika Text-to-Speech."""
 
-    @staticmethod
-    def get_returns_schema():
-        return {
-            "type": "object",
-            "properties": {
-                "output": {
-                    "type": "string",
-                    "description": "Wynik procesu"
-                }
-            }
-        }
+    def synthesize(self, text: str, voice_config: Optional[Dict[str, Any]] = None) -> bytes:
+        """
+        Konwertuje tekst na mowę.
 
-    def run(self, parameters):
-        logger = get_logger()
-        config = get_config()
-        logger.info(f"Uruchamianie procesu z parametrami: {parameters}")
-        # Przykładowa logika procesu
-        output = parameters["input"].upper()
-        logger.info(f"Wynik procesu: {output}")
-        return {"output": output}
+        Args:
+            text: Tekst do konwersji
+            voice_config: Konfiguracja głosu
 
-class DefaultProcess(Process):
-    """Przykładowa domyślna implementacja procesu."""
-    pass
+        Returns:
+            Dane audio w formacie bytes
+        """
+        ...
+
+    def get_available_voices(self) -> list:
+        """
+        Pobiera listę dostępnych głosów.
+
+        Returns:
+            Lista dostępnych głosów z metadanymi
+        """
+        ...
+
+
+class DefaultEngine:
+    """Domyślna implementacja silnika ."""
+
+    def __init__(self, config: Dict[str, Any]):
+        """
+        Inicjalizuje silnik .
+
+        Args:
+            config: Konfiguracja silnika
+        """
+        self.config = config
+
+    def synthesize(self, text: str, voice_config: Optional[Dict[str, Any]] = None) -> bytes:
+        """
+        Konwertuje tekst na mowę.
+
+        Args:
+            text: Tekst do konwersji
+            voice_config: Konfiguracja głosu
+
+        Returns:
+            Dane audio w formacie bytes
+        """
+        if voice_config is None:
+            voice_config = {}
+
+        print(f"Synthesizing text: {text}")
+        return b"SAMPLE_AUDIO_DATA"
+
+    def get_available_voices(self) -> list:
+        """
+        Pobiera listę dostępnych głosów.
+
+        Returns:
+            Lista dostępnych głosów z metadanymi
+        """
+        return [
+            {"name": "default", "language": "en-US", "gender": "female"}
+        ]

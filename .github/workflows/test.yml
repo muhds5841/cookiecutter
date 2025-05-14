@@ -30,8 +30,8 @@ jobs:
     - name: Test template generation
       run: |
         # Use the first python version from the list in cookiecutter.json as default
-        cookiecutter --no-input . project_name="Proces" project_slug="proces"
-        cd proces
+        cookiecutter --no-input . project_name="Test Project"
+        cd test_project
         pip install poetry
         poetry install
         poetry run pytest
