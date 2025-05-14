@@ -6,14 +6,19 @@
   "author_email": "info@softreck.dev",
   "python_version": ["3.11", "3.10", "3.9"],
   "use_docker": ["yes", "no"],
-  "components": {
-    "process": true,
-    "grpc": true,
-    "rest": true,
-    "webrtc": true,
-    "mcp": true,
-    "shell": true
-  },
+  "use_process": ["yes", "no"],
+  "use_grpc": ["yes", "no"],
+  "use_rest": ["yes", "no"],
+  "use_mqtt": ["yes", "no"],
+  "use_ftp": ["yes", "no"],
+  "use_webrtc": ["yes", "no"],
+  "use_websocket": ["yes", "no"],
+  "use_imap": ["yes", "no"],
+  "use_smtp": ["yes", "no"],
+  "use_pop3": ["yes", "no"],
+  "use_ssh": ["yes", "no"],
+  "use_mcp": ["yes", "no"],
+  "use_shell": ["yes", "no"],
   "mcp_configuration": {
     "transports": {
       "sse": true,
