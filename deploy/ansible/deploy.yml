@@ -1,0 +1,29 @@
+---
+- name: Deploy Process Project
+  hosts: tts_servers
+  become: yes
+
+  vars:
+    project_dir: /opt/tts-project
+
+  tasks:
+    - name: Update repository
+      git:
+        repo: git@github.com:username/tts-project.git
+        dest: "{{ project_dir }}"
+        update: yes
+
+    - name: Build Docker images
+      command: docker-compose -f docker-compose.prod.yml build
+      args:
+        chdir: "{{ project_dir }}"
+
+    - name: Start containers
+      command: docker-compose -f docker-compose.prod.yml up -d
+      args:
+        chdir: "{{ project_dir }}"
+
+    - name: Clean up unused Docker images
+      command: docker system prune -af
+      async: 300
+      poll: 0

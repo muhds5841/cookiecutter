@@ -1,6 +1,7 @@
 """Implementacja procesu przetwarzania (Process)."""
 
 import os
+import uuid
 import base64
 from typing import Dict, Any, Optional, List, Protocol, Union
 from pathlib import Path
@@ -237,8 +238,50 @@ class Process(ProcessBase):
             },
             "required": ["text"],
             "additionalProperties": False
+            }
+        }
+                "text": {
+                    "type": "string",
+                    "description": "Tekst do konwersji na mowę"
+                },
+                "language": {
+                    "type": "string",
+                    "description": "Kod języka (np. 'en-US', 'pl-PL')"
+                },
+                "voice": {
+                    "type": "string",
+                    "description": "Nazwa głosu do użycia"
+                },
+                "format": {
+                    "type": "string",
+                    "description": "Format wyjściowy audio (wav, mp3)",
+                    "enum": ["wav", "mp3"]
+                }
+            },
+            "required": ["text"]
         }
 
+    @staticmethod
+    def get_returns_schema() -> Dict[str, Any]:
+        """Zwraca schemat wyników procesu.
+
+        Returns:
+            Schemat wyników w formacie JSON Schema
+        """
+        return {
+            "type": "object",
+            "properties": {
+                "audio_id": {
+                    "type": "string",
+                    "description": "Identyfikator wygenerowanego audio"
+                },
+                "format": {
+                    "type": "string",
+                    "description": "Format audio (wav, mp3)"
+                },
+                "base64": {
+                    "type": "string",
+                    "description": "Dane audio zakodowane w base64"
     def run(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
         """Wykonuje proces przetwarzania.
 
@@ -313,7 +356,7 @@ class Process(ProcessBase):
             Lista kodów języków (np. 'en-US', 'pl-PL')
         """
         return self.engine.get_available_languages()
-        
+
     def get_resource_by_id(self, resource_id: str) -> Optional[Dict[str, Any]]:
         """Get a specific resource by its ID.
         
@@ -324,7 +367,7 @@ class Process(ProcessBase):
             Dictionary containing the resource data, or None if not found
         """
         return self.resource_cache.get(resource_id)
-        
+
     def get_status(self) -> Dict[str, Any]:
         """Get the current status of the Process.
         
@@ -344,8 +387,5 @@ class Process(ProcessBase):
 
 
 class DefaultProcess(Process):
-    """Domyślna implementacja procesu przetwarzania."""
-    
-    def __init__(self):
-        """Inicjalizuje domyślny proces przetwarzania."""
-        super().__init__()
+    """Domyślna implementacja procesu Text-to-Speech."""
+    pass
