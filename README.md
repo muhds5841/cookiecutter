@@ -28,79 +28,137 @@ Szablon cookiecutter do generowania projektów z najlepszymi praktykami jakości
 ## Struktura projektu
 
 ```
-cookiecutter-project/
-├── cookiecutter.json                  # Konfiguracja szablonu
-├── README.md                          # Dokumentacja szablonu
-├── hooks/                             # Skrypty hook
-│   ├── pre_gen_project.py             # Uruchamiany przed generowaniem
-│   └── post_gen_project.py            # Uruchamiany po wygenerowaniu projektu
-└── {{cookiecutter.project_slug}}/     # Katalog szablonu projektu
-    ├── docker-compose.yml
-    ├── Makefile                       # Główny Makefile
-    ├── pyproject.toml                 # Konfiguracja Poetry
-    ├── README.md                      # Dokumentacja projektu
-    ├── .gitignore                     # Pliki ignorowane przez Git
-    ├── core/                           # Rdzeń frameworka
-    │   ├── __init__.py
-    │   ├── config.py                    # Podstawowa konfiguracja
-    │   ├── config_manager.py            # Zaawansowane zarządzanie konfiguracją
-    │   ├── logging.py                   # Narzędzia logowania
-    │   ├── utils.py                     # Wspólne narzędzia
-    │   └── error_handling.py            # Standardowa obsługa błędów
-    ├── grpc/                         # Usługa gRPC
-    │   ├── Dockerfile
-    │   ├── pyproject.toml
-    │   ├── server.py                    # Implementacja serwera gRPC
-    │   ├── client.py                    # Klient gRPC
-    │   └── proto/                       # Definicje Protocol Buffer
-    ├── rest/                         # Usługa REST API
-    │   ├── Dockerfile
-    │   ├── pyproject.toml
-    │   ├── server.py                    # Implementacja serwera REST
-    │   └── client.py                    # Klient REST
-    ├── mcp/                          # Model Context Protocol
-    │   ├── Dockerfile
-    │   ├── pyproject.toml
-    │   ├── mcp_server.py                # Serwer MCP
-    │   ├── tools/                       # Narzędzia MCP
-    │   ├── resources/                   # Zasoby MCP
-    │   └── transports/                  # Implementacje transportów
-    ├── mqtt/                         # Usługa MQTT
-    │   ├── Dockerfile
-    │   ├── server.py                    # Serwer MQTT
-    │   └── client.py                    # Klient MQTT
-    ├── websocket/                    # Usługa WebSocket
-    │   ├── Dockerfile
-    │   ├── server.py                    # Serwer WebSocket
-    │   └── client.py                    # Klient WebSocket
-    ├── langchain/                    # Integracja z LangChain dla LLM
-    │   ├── Dockerfile
-    │   ├── tools.py                     # Narzędzia LangChain
-    │   └── chains.py                    # Łańcuchy LangChain
-    ├── quality/                      # Narzędzia jakości kodu
-    │   ├── __init__.py
-    │   ├── lint.py
-    │   ├── format.py
-    │   ├── security.py
-    │   └── complexity.py
-    ├── process/                       # Silnik Process
-    │   ├── Dockerfile
-    │   ├── pyproject.toml
-    │   ├── __init__.py
-    │   ├── process.py                   # Główna implementacja Process
-    │   ├── process_base.py              # Klasa bazowa abstrakcyjna
-    │   ├── plugin_system.py             # Architektura wtyczek
-    │   └── adapters/                    # Adaptery dla różnych implementacji
-    │   ├── __init__.py
-    │   ├── process.py
-    ├── tests/                         # Testy
-        ├── __init__.py
-        ├── conftest.py
-        └── mcp_tests/                 # Testy komponentów MCP
-            ├── __init__.py
-            ├── test_transports.py
-            ├── test_protocol.py
-            └── test_tools.py
+.
+├── core
+│   ├── config_manager.py
+│   ├── config.py
+│   ├── error_handling.py
+│   ├── __init__.py
+│   ├── logging.py
+│   ├── monitoring.py
+│   ├── README.md
+│   ├── scaffold.py
+│   ├── test_config.py
+│   └── utils.py
+├── deploy
+│   ├── ansible
+│   ├── fabfile.py
+│   ├── kubernetes
+│   └── scripts
+├── dev_setup.py
+├── docker-compose.prod.yml
+├── docker-compose.yml
+├── ftp
+│   ├── client.py
+│   ├── __init__.py
+│   ├── server.py
+│   ├── test_ftp_client.py
+│   └── test_ftp_server.py
+├── grpc
+│   ├── client.py
+│   ├── Dockerfile
+│   ├── __init__.py
+│   ├── Makefile
+│   ├── proto
+│   ├── pyproject.toml
+│   ├── server.py
+│   └── test_grpc.py
+├── hooks
+│   ├── post_gen_project.py
+│   └── pre_gen_project.py
+├── imap
+│   ├── client.py
+│   ├── server.py
+│   └── test_imap_client.py
+├── langchain
+├── Makefile
+├── mcp
+│   ├── Dockerfile
+│   ├── __init__.py
+│   ├── Makefile
+│   ├── mcp_server.py
+│   ├── process
+│   ├── protocol
+│   ├── pyproject.toml
+│   ├── README.md
+│   ├── resources
+│   ├── sampling
+│   ├── tests
+│   ├── tools
+│   └── transports
+├── mqtt
+│   ├── client.py
+│   ├── __init__.py
+│   ├── server.py
+│   ├── test_mqtt_client.py
+│   └── test_mqtt_server.py
+├── process
+│   ├── adapters
+│   ├── Dockerfile
+│   ├── __init__.py
+│   ├── languages.py
+│   ├── Makefile
+│   ├── plugin_system.py
+│   ├── process_base.py
+│   ├── process_config.py
+│   ├── process.py
+│   ├── process.py.bak
+│   ├── pyproject.toml
+│   ├── README.md
+│   └── test_process.py
+├── pyproject.toml
+├── quality
+│   ├── bandit.yaml
+│   ├── conftest.py
+│   ├── doc_checker.py
+│   ├── formatters.py
+│   ├── hooks.py
+│   ├── __init__.py
+│   ├── linters.py
+│   ├── Makefile
+│   ├── pyproject.toml
+│   ├── reporters.py
+│   ├── security.py
+│   ├── testers.py
+│   └── tox.ini
+├── README.md
+├── rest
+│   ├── client.py
+│   ├── Dockerfile
+│   ├── __init__.py
+│   ├── Makefile
+│   ├── models
+│   ├── pyproject.toml
+│   ├── server.py
+│   └── test_rest.py
+├── scripts
+│   └── quality.sh
+├── shell
+│   ├── client.py
+│   ├── __init__.py
+│   ├── interactive.py
+│   ├── main.py
+│   ├── Makefile
+│   └── pyproject.toml
+├── tests
+│   ├── conftest.py
+│   ├── e2e_tests
+│   ├── __init__.py
+│   └── __pycache__
+├── webrtc
+│   ├── client.py
+│   ├── Dockerfile
+│   ├── __init__.py
+│   ├── Makefile
+│   ├── pyproject.toml
+│   ├── session.py
+│   ├── signaling.py
+│   ├── static
+│   ├── test_webrtc.py
+│   └── test_websocket_client.py
+└── websocket
+    ├── client.py
+    └── server.py
 ```
 
 ## Instalacja
@@ -267,4 +325,3 @@ Zaktualizowana struktura projektu, z indywidualnymi Dockerfile dla każdego serw
 
 Taka architektura pozwala na szybkie generowanie kodu dla poszczególnych komponentów, 
 zachowując jednocześnie modularność i elastyczność całego systemu.
-
