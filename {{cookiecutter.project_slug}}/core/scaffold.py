@@ -48,11 +48,14 @@ def generate_adapter(name, process):
                 Dane audio w formacie bytes
             """
             if voice_config is None:
-                voice_config = {{}}
+                # Tworzymy pusty słownik - unikamy podwójnych nawiasów klamrowych
+                voice_config = dict()
 
             # Tutaj dodać kod syntezy specyficzny dla {process}
             # To jest tylko przykład - należy zaimplementować rzeczywistą integrację
-            print(f"Syntezing text: {{text}} using {process}")
+            # Unikamy używania nawiasów klamrowych w f-stringach, które powodują konflikt z Jinja2
+            text_var = "text"  # Zmienna pomocnicza
+            print(f"Syntezing {text_var}: " + str(text) + f" using {process}")
 
             # Symulacja zwracania danych audio
             return b"SAMPLE_AUDIO_DATA"
