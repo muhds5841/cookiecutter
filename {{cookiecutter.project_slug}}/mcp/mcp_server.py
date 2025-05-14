@@ -13,7 +13,7 @@ from lib.config import load_config
 from lib.logging import setup_logger
 from mcp.protocol.negotiation import ProtocolNegotiator
 from mcp.protocol.discovery import ToolDiscovery
-from mcp.tools.tts_tool import ProcessToolProvider
+from mcp.tools.process_tool import ProcessToolProvider
 from mcp.resources.uri_templates import ResourceRegistry
 from mcp.transports.hybrid import HybridServer
 
@@ -39,7 +39,7 @@ class MCPServer:
 
         # Inicjalizacja dostawców narzędzi
         self.tool_providers = [
-            ProcessToolProvider(config.get("tts_config", {}))
+            ProcessToolProvider(config.get("process_config", {}))
         ]
 
         # Inicjalizacja transportu
