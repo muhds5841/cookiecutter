@@ -7,6 +7,7 @@ Usuwa moduły, które nie zostały wybrane przez użytkownika.
 import os
 import shutil
 import sys
+import json
 from pathlib import Path
 
 # Moduły, które zawsze będą dostępne
@@ -59,10 +60,19 @@ def main():
     print("Uruchamianie skryptu post-gen-project.py...")
     project_dir = os.getcwd()
     
+    # Wczytanie pliku cookiecutter.json
+    config_file = os.path.join(project_dir, "cookiecutter.json")
+    if os.path.exists(config_file):
+        with open(config_file, "r") as f:
+            config = json.load(f)
+    else:
+        print("Plik cookiecutter.json nie istnieje, używanie domyślnych wartości.")
+        config = {}
+    
     # Sprawdzenie, które moduły należy usunąć
     for var_name, dir_name in MODULE_DIRS.items():
-        # Pobieranie wartości zmiennej cookiecutter z kontekstu
-        use_module = "{{{{ cookiecutter.{} }}}}".format(var_name)
+        # Pobieranie wartości zmiennej z pliku konfiguracyjnego
+        use_module = config.get(var_name, "yes")
         
         if use_module.lower() == "no":
             # Usuń katalog modułu
@@ -78,7 +88,7 @@ def main():
     
     # Usuń pliki testów dla niewybranych modułów
     for var_name, dir_name in MODULE_DIRS.items():
-        use_module = "{{ cookiecutter." + var_name + " }}"
+        use_module = config.get(var_name, "yes")
         
         if use_module.lower() == "no":
             # Usuń pojedyncze pliki testów w katalogu modułu
