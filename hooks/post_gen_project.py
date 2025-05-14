@@ -23,6 +23,44 @@ for component, is_selected in components.items():
             shutil.rmtree(component)
             print(f"Usunięto komponent {component}")
 
+# Dla komponentu MCP, dostosuj transporty
+if components["mcp"]:
+    mcp_transports = {
+        "sse": {{cookiecutter.mcp_configuration.transports.sse}},
+        "stdio": {{cookiecutter.mcp_configuration.transports.stdio}},
+        "grpc": {{cookiecutter.mcp_configuration.transports.grpc}}
+    }
+
+    # Usuń transporty, które nie zostały wybrane
+    for transport, is_selected in mcp_transports.items():
+        if not is_selected:
+            transport_file = Path(f"mcp/transports/{transport}.py")
+            if transport_file.exists():
+                transport_file.unlink()
+                print(f"Usunięto transport MCP: {transport}")
+
+    # Usuń moduły MCP, które nie zostały wybrane
+    if not {{cookiecutter.mcp_configuration.include_discovery}}:
+        discovery_file = Path("mcp/protocol/discovery.py")
+        if discovery_file.exists():
+            discovery_file.unlink()
+            print("Usunięto moduł wykrywania narzędzi MCP")
+
+    if not {{cookiecutter.mcp_configuration.include_tool_registry}}:
+        tool_registry_files = [
+            Path("mcp/resources/uri_templates.py")
+        ]
+        for file in tool_registry_files:
+            if file.exists():
+                file.unlink()
+                print(f"Usunięto {file}")
+
+    if not {{cookiecutter.mcp_configuration.include_adaptive_sampling}}:
+        sampling_dir = Path("mcp/sampling")
+        if sampling_dir.exists():
+            shutil.rmtree(sampling_dir)
+            print("Usunięto moduł adaptacyjnego próbkowania MCP")
+
 # Inicjalizacja repozytorium Git
 if "{{ cookiecutter.init_git }}" == "yes":
     try:
@@ -60,3 +98,9 @@ if "{{ cookiecutter.install_dependencies }}" != "yes":
     print("  poetry install  # Instalacja zależności")
 print("  make test        # Uruchomienie testów")
 print("  make quality     # Sprawdzenie jakości kodu")
+
+# Dodatkowe informacje dla MCP
+if components["mcp"]:
+    print("\nAby uruchomić serwer MCP:")
+    print("  cd mcp")
+    print("  poetry run python mcp_server.py")
