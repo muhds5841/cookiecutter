@@ -36,8 +36,6 @@
     "*.html",
     "*.js",
     "*.svg",
-    "scripts/quality.sh",
-    "hooks/post_gen_project.py",
-    "hooks/pre_gen_project.py"
+    "scripts/quality.sh"
   ]
 }

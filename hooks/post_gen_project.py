@@ -7,8 +7,6 @@ Usuwa moduły, które nie zostały wybrane przez użytkownika.
 import os
 import shutil
 import sys
-import json
-from pathlib import Path
 
 # Moduły, które zawsze będą dostępne
 CORE_MODULES = ["core", "quality", "scripts", "docs"]
@@ -30,23 +28,6 @@ MODULE_DIRS = {
     "use_shell": "shell",
 }
 
-# Mapowanie modułów na katalogi testów
-TEST_DIRS = {
-    "use_process": ["tests/process_tests", "process/tests"],
-    "use_grpc": ["tests/grpc_tests", "grpc/tests"],
-    "use_rest": ["tests/rest_tests", "rest/tests"],
-    "use_mqtt": ["tests/mqtt_tests", "mqtt/tests"],
-    "use_ftp": ["tests/ftp_tests", "ftp/tests"],
-    "use_webrtc": ["tests/webrtc_tests", "webrtc/tests"],
-    "use_websocket": ["tests/websocket_tests", "websocket/tests"],
-    "use_imap": ["tests/imap_tests", "imap/tests"],
-    "use_smtp": ["tests/smtp_tests", "smtp/tests"],
-    "use_pop3": ["tests/pop3_tests", "pop3/tests"],
-    "use_ssh": ["tests/ssh_tests", "ssh/tests"],
-    "use_mcp": ["tests/mcp_tests", "mcp/tests"],
-    "use_shell": ["tests/shell_tests", "shell/tests"],
-}
-
 def remove_directory(directory):
     """Usuwa katalog, jeśli istnieje."""
     if os.path.exists(directory):
@@ -60,50 +41,57 @@ def main():
     print("Uruchamianie skryptu post-gen-project.py...")
     project_dir = os.getcwd()
     
-    # Wczytanie pliku cookiecutter.json
-    config_file = os.path.join(project_dir, "cookiecutter.json")
-    if os.path.exists(config_file):
-        with open(config_file, "r") as f:
-            config = json.load(f)
-    else:
-        print("Plik cookiecutter.json nie istnieje, używanie domyślnych wartości.")
-        config = {}
+    # Usuwanie katalogów dla niewybranych modułów
+    if "{{ cookiecutter.use_docker }}" == "no":
+        remove_directory(os.path.join(project_dir, "docker"))
+        remove_directory(os.path.join(project_dir, "docker-compose.yml"))
+        remove_directory(os.path.join(project_dir, "docker-compose.prod.yml"))
     
-    # Sprawdzenie, które moduły należy usunąć
-    for var_name, dir_name in MODULE_DIRS.items():
-        # Pobieranie wartości zmiennej z pliku konfiguracyjnego
-        use_module = config.get(var_name, "yes")
-        
-        if use_module.lower() == "no":
-            # Usuń katalog modułu
-            module_path = os.path.join(project_dir, dir_name)
-            if dir_name not in CORE_MODULES:  # Nie usuwaj podstawowych modułów
-                remove_directory(module_path)
-            
-            # Usuń katalogi testów dla tego modułu
-            if var_name in TEST_DIRS:
-                for test_dir in TEST_DIRS[var_name]:
-                    test_path = os.path.join(project_dir, test_dir)
-                    remove_directory(test_path)
+    if "{{ cookiecutter.use_process }}" == "no":
+        remove_directory(os.path.join(project_dir, "process"))
     
-    # Usuń pliki testów dla niewybranych modułów
-    for var_name, dir_name in MODULE_DIRS.items():
-        use_module = config.get(var_name, "yes")
-        
-        if use_module.lower() == "no":
-            # Usuń pojedyncze pliki testów w katalogu modułu
-            test_files = [f for f in os.listdir(project_dir) if f.startswith(f"test_{dir_name}") or f.startswith(f"test_{dir_name.replace('_', '')}")]
-            for test_file in test_files:
-                test_file_path = os.path.join(project_dir, test_file)
-                if os.path.isfile(test_file_path):
-                    print(f"Usuwanie pliku testu: {test_file_path}")
-                    os.remove(test_file_path)
+    if "{{ cookiecutter.use_grpc }}" == "no":
+        remove_directory(os.path.join(project_dir, "grpc"))
+    
+    if "{{ cookiecutter.use_rest }}" == "no":
+        remove_directory(os.path.join(project_dir, "rest"))
+    
+    if "{{ cookiecutter.use_mqtt }}" == "no":
+        remove_directory(os.path.join(project_dir, "mqtt"))
+    
+    if "{{ cookiecutter.use_ftp }}" == "no":
+        remove_directory(os.path.join(project_dir, "ftp"))
+    
+    if "{{ cookiecutter.use_webrtc }}" == "no":
+        remove_directory(os.path.join(project_dir, "webrtc"))
+    
+    if "{{ cookiecutter.use_websocket }}" == "no":
+        remove_directory(os.path.join(project_dir, "websocket"))
+    
+    if "{{ cookiecutter.use_imap }}" == "no":
+        remove_directory(os.path.join(project_dir, "imap"))
+    
+    if "{{ cookiecutter.use_smtp }}" == "no":
+        remove_directory(os.path.join(project_dir, "smtp"))
+    
+    if "{{ cookiecutter.use_pop3 }}" == "no":
+        remove_directory(os.path.join(project_dir, "pop3"))
+    
+    if "{{ cookiecutter.use_ssh }}" == "no":
+        remove_directory(os.path.join(project_dir, "ssh"))
+    
+    if "{{ cookiecutter.use_mcp }}" == "no":
+        remove_directory(os.path.join(project_dir, "mcp"))
+    
+    if "{{ cookiecutter.use_shell }}" == "no":
+        remove_directory(os.path.join(project_dir, "shell"))
     
     # Usuń katalog tests, jeśli jest pusty
     tests_dir = os.path.join(project_dir, "tests")
-    if os.path.exists(tests_dir) and not os.listdir(tests_dir):
-        print(f"Usuwanie pustego katalogu testów: {tests_dir}")
-        os.rmdir(tests_dir)
+    if os.path.exists(tests_dir) and os.path.isdir(tests_dir):
+        if not os.listdir(tests_dir):
+            print(f"Usuwanie pustego katalogu testów: {tests_dir}")
+            shutil.rmtree(tests_dir)
     
     print("Skrypt post-gen-project.py zakończony.")
 
