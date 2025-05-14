@@ -65,12 +65,15 @@ for tool in black isort flake8 pylint mypy pytest; do
     check_tool $tool
 done
 
+# Ignorowane pliki i katalogi (wzorce dla grepowania)
+IGNORE_PATTERNS="--exclude=\*.jinja2 --exclude=\*{{*}}\* --exclude=pyproject.toml"
+
 # Uruchomienie testów
-run_test "formatowania kodu (black)" "black --check $TARGET_DIR" "true" "black $TARGET_DIR"
-run_test "kolejności importów (isort)" "isort --check $TARGET_DIR" "true" "isort $TARGET_DIR"
-run_test "zgodności z PEP 8 (flake8)" "flake8 $TARGET_DIR" "false" ""
-run_test "statycznej analizy kodu (pylint)" "pylint --recursive=y $TARGET_DIR" "false" ""
-run_test "typów (mypy)" "mypy $TARGET_DIR" "false" ""
+run_test "formatowania kodu (black)" "black --check $TARGET_DIR --exclude '/(\{\.*)|(.*\.jinja2)/'" "true" "black $TARGET_DIR --exclude '/(\{\.*)|(.*\.jinja2)/'"
+run_test "kolejności importów (isort)" "isort --check $TARGET_DIR --skip-glob '*{{*}}*' --skip-glob '*.jinja2' --skip pyproject.toml" "true" "isort $TARGET_DIR --skip-glob '*{{*}}*' --skip-glob '*.jinja2' --skip pyproject.toml"
+run_test "zgodności z PEP 8 (flake8)" "flake8 $TARGET_DIR --exclude=*.jinja2,*{{*}}*,pyproject.toml" "false" ""
+run_test "statycznej analizy kodu (pylint)" "pylint --recursive=y $TARGET_DIR --ignore-patterns='*.jinja2,*{{*}}*,pyproject.toml'" "false" ""
+run_test "typów (mypy)" "mypy $TARGET_DIR --exclude '(.*\.jinja2)|(.*\{\{.*)|(pyproject\.toml)'" "false" ""
 
 # Uruchamianie testów
 if [ "$TARGET_DIR" = "." ]; then

@@ -33,9 +33,9 @@ for component, is_selected in components.items():
 # Dla komponentu MCP, dostosuj transporty
 if components["mcp"]:
     mcp_transports = {
-        "sse": {{cookiecutter.mcp_configuration.transports.sse}},
-        "stdio": {{cookiecutter.mcp_configuration.transports.stdio}},
-        "grpc": {{cookiecutter.mcp_configuration.transports.grpc}},
+        "sse": "{{ cookiecutter.mcp_configuration.transports.sse }}" == "true",
+        "stdio": "{{ cookiecutter.mcp_configuration.transports.stdio }}" == "true",
+        "grpc": "{{ cookiecutter.mcp_configuration.transports.grpc }}" == "true",
     }
 
     # Usuń transporty, które nie zostały wybrane
@@ -47,20 +47,20 @@ if components["mcp"]:
                 print(f"Usunięto transport MCP: {transport}")
 
     # Usuń moduły MCP, które nie zostały wybrane
-    if not {{cookiecutter.mcp_configuration.include_discovery}}:
+    if not "{{ cookiecutter.mcp_configuration.include_discovery }}" == "true":
         discovery_file = Path("mcp/protocol/discovery.py")
         if discovery_file.exists():
             discovery_file.unlink()
             print("Usunięto moduł wykrywania narzędzi MCP")
 
-    if not {{cookiecutter.mcp_configuration.include_tool_registry}}:
+    if not "{{ cookiecutter.mcp_configuration.include_tool_registry }}" == "true":
         tool_registry_files = [Path("mcp/resources/uri_templates.py")]
         for file in tool_registry_files:
             if file.exists():
                 file.unlink()
                 print(f"Usunięto {file}")
 
-    if not {{cookiecutter.mcp_configuration.include_adaptive_sampling}}:
+    if not "{{ cookiecutter.mcp_configuration.include_adaptive_sampling }}" == "true":
         sampling_dir = Path("mcp/sampling")
         if sampling_dir.exists():
             shutil.rmtree(sampling_dir)
