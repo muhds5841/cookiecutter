@@ -277,341 +277,196 @@ SIGNALING_PORT=8080
 {% endif %}
 ```
 
-The easiest way to get started is to use the development setup script:
+## Przykłady użycia
 
-```bash
-# Set up the development environment
-python dev_setup.py
-
-# Start the services
-docker-compose up -d
-```
-
-### Manual Setup
-
-If you prefer to set up the environment manually:
-
-```bash
-# Install dependencies for each component
-cd process && poetry install
-cd ../grpc && poetry install
-cd ../rest && poetry install
-cd ../mcp && poetry install
-
-# Set up pre-commit hooks
-pip install pre-commit
-pre-commit install
-```
-
-### Environment Configuration
-
-Each component uses environment variables for configuration. We use a consistent naming convention with prefixes to avoid conflicts:
-
-- `CORE_*` - Core framework settings
-- `PROCESS_*` - Process engine settings
-- `GRPC_*` - gRPC service settings
-- `REST_*` - REST API service settings
-- `MCP_*` - MCP service settings
-
-Example configuration:
-
-```bash
-# Copy example environment files
-cp .env.example .env
-
-# Or for individual components
-cp process/.env.example process/.env
-cp grpc/.env.example grpc/.env
-cp rest/.env.example rest/.env
-cp mcp/.env.example mcp/.env
-```
-
-See the [Environment Variables Documentation](docs/environment_variables.md) for a complete list of available settings.
-
-## Usage Examples
-
-### Process Engine
+{% if cookiecutter.use_grpc == 'yes' %}
+### Klient gRPC
 
 ```python
-from process.process import Process
+from {{ cookiecutter.project_slug }}.grpc.client import ServiceClient
 
-# Initialize the Process engine
-process = Process()
+# Utworzenie klienta
+client = ServiceClient("localhost:50051")
 
-# Process text
-result = process.process_text("Text to process", language="en-US")
+# Wywołanie metody
+response = client.process_request("Przykładowe dane")
+print(f"Odpowiedź: {response}")
 
-# Access the result
-output_data = result.data
-output_format = result.format
+# Zamknięcie połączenia
+client.close()
 ```
+{% endif %}
 
-### REST API Client
+{% if cookiecutter.use_rest == 'yes' %}
+### Klient REST API
 
 ```python
-from rest.client import ProcessClient
+from {{ cookiecutter.project_slug }}.rest.client import ServiceClient
 
-# Initialize the REST client
-client = ProcessClient("http://localhost:5000")
+# Utworzenie klienta
+client = ServiceClient("http://localhost:8000")
 
-# Process text
-result = client.process_text("Text to process", language="en-US")
+# Wywołanie metody
+response = client.process_request("Przykładowe dane")
+print(f"Odpowiedź: {response}")
 ```
+{% endif %}
 
-### gRPC Client
+{% if cookiecutter.use_mqtt == 'yes' %}
+### Klient MQTT
 
 ```python
-from grpc.client import ProcessClient
+from {{ cookiecutter.project_slug }}.mqtt.client import MqttClient
 
-# Initialize the gRPC client
-client = ProcessClient("localhost:50051")
+# Utworzenie klienta
+client = MqttClient("localhost", 1883)
 
-# Process text
-result = client.process_text("Text to process", language="en-US")
+# Funkcja callback dla odbieranych wiadomości
+def on_message(topic, payload):
+    print(f"Otrzymano wiadomość na temacie {topic}: {payload}")
+
+# Połączenie i subskrypcja
+client.connect()
+client.subscribe("temat/testowy", on_message)
+
+# Publikacja wiadomości
+client.publish("temat/testowy", "Testowa wiadomość")
+
+# Rozłączenie
+client.disconnect()
 ```
+{% endif %}
 
-## Development
-
-### Installing Poetry
-
-This project uses Poetry for dependency management. To install Poetry:
-
-#### On Linux/macOS:
-
-```bash
-# Method 1: Using the official installer
-curl -sSL https://install.python-poetry.org | python3 -
-
-# Method 2: Using pip
-pip install poetry
-
-# Method 3: On Ubuntu/Debian
-sudo apt install python3-poetry
-```
-
-#### On Windows (PowerShell):
-
-```powershell
-# Method 1: Using the official installer
-(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
-
-# Method 2: Using pip
-pip install poetry
-```
-
-After installation, verify Poetry is installed correctly:
-
-```bash
-poetry --version
-```
-
-#### Alternative: Using virtualenv and pip
-
-If you prefer not to install Poetry, you can use traditional virtualenv and pip:
-
-```bash
-# Create a virtual environment
-python -m venv venv
-
-# Activate the virtual environment
-# On Linux/macOS:
-source venv/bin/activate
-# On Windows:
-# venv\Scripts\activate
-
-# Install dependencies from requirements.txt
-pip install -r requirements.txt
-```
-
-### Creating New Modules
-
-The Process system is designed to be modular. Here's how to create and set up new modules:
-
-#### 1. Create a new protocol module (e.g., for a new protocol like GraphQL):
-
-```bash
-# Create the directory structure
-mkdir -p graphql
-cd graphql
-
-# Initialize Poetry for the module
-poetry init
-
-# Add dependencies
-poetry add fastapi uvicorn graphql-core
-
-# Add development dependencies
-poetry add --group dev pytest black isort mypy
-
-# Create basic files
-touch server.py client.py .env.example
-```
-
-#### 2. Create a new plugin for the Process engine:
-
-```bash
-# Navigate to the process directory
-cd process
-
-# Create a plugin directory if it doesn't exist
-mkdir -p plugins
-
-# Create a new plugin file
-touch plugins/my_plugin.py
-```
-
-Example plugin implementation in `plugins/my_plugin.py`:
+{% if cookiecutter.use_webrtc == 'yes' %}
+### Klient WebRTC
 
 ```python
-from process.process_base import ProcessBase
-from process.plugin_system import register_plugin
+import asyncio
+from {{ cookiecutter.project_slug }}.webrtc.client import WebRTCClient
 
-class MyPlugin(ProcessBase):
-    """Custom processing plugin."""
+async def main():
+    # Utworzenie klienta
+    client = WebRTCClient("ws://localhost:8080")
     
-    def process_text(self, text, **options):
-        """Process text with custom logic."""
-        # Implement your processing logic here
-        processed_text = text.upper()  # Example: convert to uppercase
-        
-        # Create and return a result
-        return self.create_result(
-            data=processed_text,
-            format="text",
-            metadata={"plugin": "my_plugin"}
-        )
+    # Połączenie z serwerem sygnalizacyjnym
+    await client.connect()
+    
+    # Dołączenie do pokoju
+    await client.join_room("pokój_testowy")
+    
+    # Oczekiwanie na połączenia
+    await asyncio.sleep(60)
+    
+    # Zamknięcie połączenia
+    await client.close()
 
-# Register the plugin
-register_plugin("my_plugin", MyPlugin)
+asyncio.run(main())
 ```
+{% endif %}
 
-#### 3. Create a new service module with monitoring:
+{% if cookiecutter.use_shell == 'yes' %}
+### Interaktywna powłoka
 
 ```bash
-# Create the directory structure
-mkdir -p my_service
-cd my_service
+# Uruchomienie interaktywnej powłoki
+python -m {{ cookiecutter.project_slug }}.shell.main
 
-# Initialize Poetry for the module
-poetry init
-
-# Add dependencies
-poetry add prometheus-client healthcheck
-
-# Create basic files
-touch server.py client.py .env.example
+# W powłoce możesz używać komend takich jak:
+# help - wyświetla dostępne komendy
+# run <command> - uruchamia polecenie systemowe
+# list - wyświetla listę procesów
+# kill <pid> - kończy proces o podanym PID
 ```
+{% endif %}
 
-Example `.env.example` for the new service:
+## Rozwój
 
-```
-# My Service Environment Variables
-MY_SERVICE_HOST=0.0.0.0
-MY_SERVICE_PORT=8080
-MY_SERVICE_LOG_LEVEL=INFO
-MY_SERVICE_PROCESS_HOST=process
-MY_SERVICE_PROCESS_PORT=8000
-
-# Monitoring settings
-MY_SERVICE_ENABLE_METRICS=true
-MY_SERVICE_METRICS_PORT=9101
-MY_SERVICE_HEALTH_CHECK_INTERVAL=30
-
-# Core settings
-CORE_LOG_LEVEL=INFO
-```
-
-### Adding New Plugins
-
-The Process system can be extended with plugins. To create a new plugin:
-
-1. Create a new module in the `process/plugins/` directory
-2. Implement a class that inherits from `ProcessBase`
-3. Register the plugin with the `PluginRegistry`
-
-See the [Developer Guide](docs/developer_guide.md) for detailed instructions.
-
-### Creating New Service Interfaces
-
-You can add new service interfaces (e.g., WebSocket) by following the pattern of existing services:
-
-1. Create a new directory for your service
-2. Implement a server that connects to the Process engine
-3. Implement a client for easy integration
-
-See the [Modular Architecture](docs/modular_architecture.md) documentation for details.
-
-## Testing Modules
-
-Each module in the Process system can be tested independently. Here's how to test different components:
-
-### Testing the Process Engine
+Aby rozwijać projekt, zalecamy następujące kroki:
 
 ```bash
-# Navigate to the process directory
-cd process
+# Instalacja zależności deweloperskich
+poetry install --with dev
 
-# Run tests with Poetry
-poetry run pytest
+# Konfiguracja pre-commit hooków
+pre-commit install
 
-# Or with traditional pytest if not using Poetry
-python -m pytest
+# Uruchomienie testów
+pytest
+
+# Sprawdzenie jakości kodu
+./scripts/quality.sh
 ```
 
-### Testing Protocol Implementations
+{% if cookiecutter.use_process == 'yes' %}
+### Dodawanie nowych wtyczek
+
+Aby dodać nową wtyczkę do systemu:
+
+1. Utwórz nową klasę w katalogu `process/plugins/`
+2. Zaimplementuj interfejs `ProcessPlugin`
+3. Zarejestruj wtyczkę w systemie
+
+Przykład:
+
+```python
+from {{ cookiecutter.project_slug }}.process.plugin_system import ProcessPlugin, register_plugin
+
+@register_plugin
+class MyPlugin(ProcessPlugin):
+    """Moja własna wtyczka."""
+    
+    def __init__(self):
+        super().__init__("my_plugin")
+    
+    def process(self, data):
+        """Przetwarzanie danych."""
+        return f"Przetworzone: {data}"
+```
+{% endif %}
+
+{% if cookiecutter.use_grpc == 'yes' or cookiecutter.use_rest == 'yes' %}
+### Tworzenie nowych interfejsów usług
+
+Aby dodać nowy interfejs usługi:
+
+{% if cookiecutter.use_grpc == 'yes' %}
+#### gRPC
+
+1. Zdefiniuj nowy serwis w pliku `.proto` w katalogu `grpc/proto/`
+2. Wygeneruj kod za pomocą `grpcio-tools`
+3. Zaimplementuj serwer w `grpc/server.py`
+4. Zaimplementuj klienta w `grpc/client.py`
+{% endif %}
+
+{% if cookiecutter.use_rest == 'yes' %}
+#### REST API
+
+1. Dodaj nową trasę w katalogu `rest/routes/`
+2. Zaimplementuj odpowiedni endpoint w `rest/server.py`
+3. Zaktualizuj klienta w `rest/client.py`
+{% endif %}
+{% endif %}
+
+## Dokumentacja
+
+Dokumentacja projektu jest dostępna w katalogu `docs/`. Zawiera ona szczegółowe informacje na temat:
+
+- Architektury systemu
+- Konfiguracji poszczególnych modułów
+- API dla każdego interfejsu usługi
+- Przykładów użycia
+- Przewodnika rozwijania projektu
+
+Aby wygenerować dokumentację w formacie HTML, możesz użyć następującego polecenia:
 
 ```bash
-# Example: Testing the gRPC service
-cd grpc
-poetry run pytest
+# Instalacja zależności do generowania dokumentacji
+pip install mkdocs mkdocs-material
 
-# Example: Testing the REST API
-cd rest
-poetry run pytest
+# Generowanie dokumentacji
+mkdocs build
 ```
 
-### Testing Health Checks and Monitoring
+## Licencja
 
-Each service exposes health check and metrics endpoints that can be tested:
-
-```bash
-# Start the service
-cd imap
-poetry run python server.py
-
-# In another terminal, test the health endpoint
-curl http://localhost:8080/health
-
-# Test the metrics endpoint
-curl http://localhost:9101/metrics
-```
-
-### End-to-End Testing
-
-Test the entire system with all services running:
-
-```bash
-# Start all services with Docker Compose
-docker-compose up -d
-
-# Run end-to-end tests
-cd tests/e2e_tests
-python -m pytest
-```
-
-## Documentation
-
-Detailed documentation is available in the `docs/` directory:
-
-- [Developer Guide](docs/developer_guide.md) - Comprehensive guide for developers
-- [Modular Architecture](docs/modular_architecture.md) - Details on the system architecture
-- [Environment Variables](docs/environment_variables.md) - List of all configuration options
-- [API Reference](docs/api_reference.md) - API documentation for all components
-
-## Contributing
-
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Ten projekt jest udostępniany na licencji {{ cookiecutter.license }}. Zobacz plik LICENSE, aby uzyskać więcej informacji.
