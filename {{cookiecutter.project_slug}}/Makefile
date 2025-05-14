@@ -1,7 +1,7 @@
 .PHONY: setup build up down test clean quality format lint type-check
 
 PYTHON = python
-MODULES = {% if cookiecutter.components.process %}process {% endif %}{% if cookiecutter.components.grpc %}grpc {% endif %}{% if cookiecutter.components.rest %}rest {% endif %}{% if cookiecutter.components.webrtc %}webrtc {% endif %}{% if cookiecutter.components.mcp %}mcp {% endif %}{% if cookiecutter.components.shell %}shell {% endif %}
+MODULES = {% if cookiecutter.use_process == 'yes' %}process {% endif %}{% if cookiecutter.use_grpc == 'yes' %}grpc {% endif %}{% if cookiecutter.use_rest == 'yes' %}rest {% endif %}{% if cookiecutter.use_mqtt == 'yes' %}mqtt {% endif %}{% if cookiecutter.use_ftp == 'yes' %}ftp {% endif %}{% if cookiecutter.use_webrtc == 'yes' %}webrtc {% endif %}{% if cookiecutter.use_websocket == 'yes' %}websocket {% endif %}{% if cookiecutter.use_imap == 'yes' %}imap {% endif %}{% if cookiecutter.use_smtp == 'yes' %}smtp {% endif %}{% if cookiecutter.use_pop3 == 'yes' %}pop3 {% endif %}{% if cookiecutter.use_ssh == 'yes' %}ssh {% endif %}{% if cookiecutter.use_mcp == 'yes' %}mcp {% endif %}{% if cookiecutter.use_shell == 'yes' %}shell {% endif %}
 
 # Konfiguracja projektu
 setup:

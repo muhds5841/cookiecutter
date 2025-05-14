@@ -3,17 +3,37 @@ Klient gRPC dla usługi Process.
 """
 
 import argparse
+import base64
 import os
 import sys
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
-import grpc
-
-# Dodaj katalog nadrzędny do ścieżki, aby umożliwić import z lib
+# Dodaj katalog nadrzędny do ścieżki, aby umożliwić import z core
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from lib.config import load_config
-from lib.logging import configure_logging, get_logger
+# Importy wewnętrzne - będą dostępne po wygenerowaniu projektu
+try:
+    from core.config import Config
+    from core.logging import configure_logging, get_logger
+except ImportError:
+    # Fallback dla testów
+    Config = object
+    configure_logging = lambda *args, **kwargs: None
+    get_logger = lambda name: print
+
+# Importy bibliotek zewnętrznych - tylko jeśli grpc jest zainstalowane
+try:
+    import grpc
+except ImportError:
+    # Fallback dla przypadku, gdy grpc nie jest zainstalowane
+    class grpc:
+        class RpcError(Exception):
+            def code(self): return "UNAVAILABLE"
+            def details(self): return "gRPC nie jest zainstalowane"
+        
+        @staticmethod
+        def insecure_channel(*args, **kwargs):
+            return None
 
 # Importy wygenerowane z proto (będą dostępne po wygenerowaniu kodu z proto)
 # from proto.generated import process_pb2, process_pb2_grpc
@@ -21,6 +41,7 @@ from lib.logging import configure_logging, get_logger
 
 # Tymczasowa implementacja klas protobuf do czasu wygenerowania ich z pliku .proto
 class ProcessRequest:
+    """Klasa reprezentująca żądanie przetwarzania."""
     def __init__(self, text="", language="", resource="", output_format="wav"):
         self.text = text
         self.language = language
@@ -28,7 +49,17 @@ class ProcessRequest:
         self.output_format = output_format
 
 
+class TtsRequest:
+    """Klasa reprezentująca żądanie syntezy mowy."""
+    def __init__(self, text="", language="", voice="", format="wav"):
+        self.text = text
+        self.language = language
+        self.voice = voice
+        self.format = format
+
+
 class EmptyRequest:
+    """Klasa reprezentująca puste żądanie."""
     pass
 
 
@@ -55,7 +86,7 @@ class TtsClient:
         text: str,
         language: Optional[str] = None,
         voice: Optional[str] = None,
-        format: str = "wav",
+        output_format: str = "wav",
     ) -> Dict[str, Any]:
         """Konwertuje tekst na mowę.
 
@@ -63,7 +94,7 @@ class TtsClient:
             text: Tekst do konwersji
             language: Kod języka (np. 'en-US', 'pl-PL')
             voice: Nazwa głosu do użycia
-            format: Format wyjściowy audio (wav, mp3)
+            output_format: Format wyjściowy audio (wav, mp3)
 
         Returns:
             Słownik z wynikiem syntezy (audio_id, format, base64)
@@ -71,7 +102,7 @@ class TtsClient:
         self.logger.info(f"Wysyłanie żądania syntezy: {text[:50]}...")
 
         # Utwórz żądanie
-        request = TtsRequest(text=text, language=language or "", voice=voice or "", format=format)
+        request = TtsRequest(text=text, language=language or "", voice=voice or "", format=output_format)
 
         try:
             # Wywołaj metodę zdalną
@@ -81,7 +112,7 @@ class TtsClient:
             response = type(
                 "obj",
                 (object,),
-                {"audio_id": "sample-audio-id", "format": format, "base64": "sample-base64-data"},
+                {"audio_id": "sample-audio-id", "format": output_format, "base64": "sample-base64-data"},
             )
 
             return {
@@ -194,7 +225,11 @@ def main():
     args = parser.parse_args()
 
     # Załaduj konfigurację
-    config = load_config()
+    try:
+        config = Config.load_from_env()
+    except Exception:
+        # Fallback dla przypadku, gdy Config nie jest dostępny
+        config = {"GRPC_CLIENT_LOG_LEVEL": "info"}
 
     # Skonfiguruj logowanie
     configure_logging(
@@ -220,15 +255,13 @@ def main():
 
         elif args.text:
             result = client.synthesize(
-                text=args.text, language=args.language, voice=args.voice, format=args.format
+                text=args.text, language=args.language, voice=args.voice, output_format=args.format
             )
 
             print(f"Wygenerowano audio: {result['audio_id']} (format: {result['format']})")
 
             # Zapisz do pliku, jeśli podano ścieżkę wyjściową
             if args.output:
-                import base64
-
                 with open(args.output, "wb") as f:
                     f.write(base64.b64decode(result["base64"]))
 
