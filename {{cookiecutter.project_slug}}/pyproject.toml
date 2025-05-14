@@ -1,34 +1,12 @@
-#### `{{cookiecutter.project_slug}}/pyproject.toml`
-
-```toml
 [tool.poetry]
 name = "{{ cookiecutter.project_slug }}"
 version = "0.1.0"
 description = "{{ cookiecutter.project_description }}"
-authors = ["{{ cookiecutter.author_name }} <{{ cookiecutter.author_email }}>"]
+authors = ["Tom Sapletta <>"]
 readme = "README.md"
-packages = []
 
 [tool.poetry.dependencies]
 python = "^{{ cookiecutter.python_version }}"
-{% if cookiecutter.components.tts_engine %}
-pydantic = "^2.5.0"
-{% endif %}
-{% if cookiecutter.components.grpc %}
-grpcio = "^1.59.0"
-protobuf = "^4.25.0"
-{% endif %}
-{% if cookiecutter.components.rest %}
-fastapi = "^0.104.0"
-uvicorn = "^0.23.0"
-{% endif %}
-{% if cookiecutter.components.webrtc %}
-aiortc = "^1.5.0"
-websockets = "^11.0.3"
-{% endif %}
-{% if cookiecutter.components.mcp %}
-mcp = "^0.1.0"
-{% endif %}
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
@@ -41,7 +19,7 @@ tox = "^4.11.0"
 pre-commit = "^3.3.3"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]

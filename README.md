@@ -1,6 +1,9 @@
-# Cookiecutter TTS Project
+# Cookiecutter Project
 
-Szablon cookiecutter do generowania projektów Text-to-Speech z najlepszymi praktykami jakości kodu.
+Szablon cookiecutter do generowania projektów z najlepszymi praktykami jakości kodu.
+
+Repozytorium: [https://github.com/pyfunc/cookiecutter.git](https://github.com/pyfunc/cookiecutter.git)
+Autor: Tom Sapletta
 
 ---
 
@@ -20,12 +23,12 @@ Szablon cookiecutter do generowania projektów Text-to-Speech z najlepszymi prak
 
 ## Opis
 
-Szablon cookiecutter do generowania projektów Text-to-Speech z najlepszymi praktykami jakości kodu.
+Szablon cookiecutter do generowania projektów z najlepszymi praktykami jakości kodu.
 
 ## Struktura projektu
 
 ```
-cookiecutter-tts-project/
+cookiecutter-project/
 ├── cookiecutter.json                  # Konfiguracja szablonu
 ├── README.md                          # Dokumentacja szablonu
 ├── hooks/                             # Skrypty hook
@@ -43,12 +46,12 @@ cookiecutter-tts-project/
     │   ├── logging.py
     │   ├── utils.py
     │   └── quality/                   # Narzędzia jakości kodu
-    ├── tts_engine/                    # Silnik TTS
+    ├── process/                       # Główny proces (dowolny)
     │   ├── Dockerfile
     │   ├── pyproject.toml
     │   ├── __init__.py
-    │   ├── tts_engine.py
-    │   └── adapters/                  # Adaptery dla różnych silników TTS
+    │   ├── process.py
+    │   └── adapters/                  # Adaptery dla różnych implementacji
     ├── mcp/                           # Komponent MCP (nowy/rozszerzony)
     │   ├── Dockerfile
     │   ├── pyproject.toml
@@ -64,7 +67,7 @@ cookiecutter-tts-project/
     │   │   └── discovery.py           # Wykrywanie narzędzi
     │   ├── tools/                     # Narzędzia MCP
     │   │   ├── __init__.py
-    │   │   └── tts_tool.py            # Narzędzie TTS
+    │   │   └── process_tool.py        # Narzędzie ogólne (dowolny proces)
     │   ├── resources/                 # Zasoby MCP
     │   │   ├── __init__.py
     │   │   └── uri_templates.py       # Definicje URI templates
@@ -114,7 +117,7 @@ poetry run python mcp_server.py
 
 ## Funkcjonalności
 
-- Modularny system  z wieloma komponentami
+- Modularny system z wieloma komponentami
 - Wsparcie dla różnych protokołów komunikacyjnych (gRPC, REST, WebRTC)
 - Integracja z Model Context Protocol (MCP)
 - Narzędzia zapewnienia jakości kodu (Black, isort, Flake8, mypy)
@@ -150,7 +153,7 @@ make quality
 Generowanie projektu z minimalną konfiguracją:
 
 ```bash
-cookiecutter path/to/cookiecutter-tts-project
+cookiecutter path/to/cookiecutter-project
 ```
 
 ---

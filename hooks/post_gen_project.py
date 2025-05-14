@@ -9,7 +9,7 @@ from pathlib import Path
 
 # Usunięcie komponentów, które nie zostały wybrane
 components = {
-    "tts_engine": {{cookiecutter.components.tts_engine}},
+    "process": {{cookiecutter.components.process}},
     "grpc": {{cookiecutter.components.grpc}},
     "rest": {{cookiecutter.components.rest}},
     "webrtc": {{cookiecutter.components.webrtc}},

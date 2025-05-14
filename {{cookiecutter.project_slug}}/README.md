@@ -4,13 +4,13 @@
 
 ## Struktura projektu
 
-{% if cookiecutter.components.tts_engine %}
-- tts_engine/                # Silnik TTS
+{% if cookiecutter.components.process %}
+- process/                    # Główny proces (dowolny)
   ├── Dockerfile
   ├── pyproject.toml
   ├── __init__.py
-  ├── tts_engine.py
-  └── adapters/             # Adaptery dla różnych silników TTS
+  ├── process.py              # Główna logika procesu
+  └── adapters/               # Adaptery dla różnych implementacji
 {% endif %}
 {% if cookiecutter.components.mcp %}
 - mcp/                       # Komponent MCP
@@ -41,8 +41,8 @@
 
 ## Funkcjonalności
 
-{% if cookiecutter.components.tts_engine %}
-- Silnik syntezy mowy z obsługą wielu silników (coqui, google, aws)
+{% if cookiecutter.components.process %}
+- Główny proces z obsługą wielu implementacji
 {% endif %}
 {% if cookiecutter.components.mcp %}
 - Integracja z Model Context Protocol (MCP) umożliwiająca łatwą integrację z LLM

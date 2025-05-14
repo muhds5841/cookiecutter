@@ -15,7 +15,7 @@ if not re.match(r"^[a-z][a-z0-9_]+$", PROJECT_SLUG):
 
 # Sprawdzanie, czy wybrano przynajmniej jeden komponent
 components = [
-    "{{ cookiecutter.components.tts_engine }}",
+    "{{ cookiecutter.components.process }}",
     "{{ cookiecutter.components.grpc }}",
     "{{ cookiecutter.components.rest }}",
     "{{ cookiecutter.components.webrtc }}",
