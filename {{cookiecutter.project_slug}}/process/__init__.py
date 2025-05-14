@@ -1,1 +1,5 @@
-# Init for process module
+"""Moduł silnika Text-to-Speech."""
+
+from .process import Engine
+
+__all__ = ["Engine"]

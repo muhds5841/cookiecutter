@@ -1,5 +1,5 @@
 """Moduł silnika Text-to-Speech."""
 
-from .tts_engine import Engine
+from .process import Engine
 
 __all__ = ["Engine"]

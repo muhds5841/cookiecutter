@@ -1,4 +1,4 @@
-"""Implementacja serwera MCP dla integracji z systemem TTS."""
+"""Implementacja serwera MCP dla integracji z systemem Process."""
 
 import asyncio
 import sys
@@ -13,7 +13,7 @@ from lib.config import load_config
 from lib.logging import setup_logger
 from mcp.protocol.negotiation import ProtocolNegotiator
 from mcp.protocol.discovery import ToolDiscovery
-from mcp.tools.tts_tool import TTSToolProvider
+from mcp.tools.tts_tool import ProcessToolProvider
 from mcp.resources.uri_templates import ResourceRegistry
 from mcp.transports.hybrid import HybridServer
 
@@ -39,7 +39,7 @@ class MCPServer:
 
         # Inicjalizacja dostawców narzędzi
         self.tool_providers = [
-            TTSToolProvider(config.get("tts_config", {}))
+            ProcessToolProvider(config.get("tts_config", {}))
         ]
 
         # Inicjalizacja transportu

@@ -1,7 +1,7 @@
 .PHONY: setup build up down test clean quality format lint type-check
 
 PYTHON = python
-MODULES = {% if cookiecutter.components.tts_engine %}tts_engine {% endif %}{% if cookiecutter.components.grpc %}grpc {% endif %}{% if cookiecutter.components.rest %}rest {% endif %}{% if cookiecutter.components.webrtc %}webrtc {% endif %}{% if cookiecutter.components.mcp %}mcp {% endif %}{% if cookiecutter.components.shell %}shell {% endif %}
+MODULES = {% if cookiecutter.components.process %}process {% endif %}{% if cookiecutter.components.grpc %}grpc {% endif %}{% if cookiecutter.components.rest %}rest {% endif %}{% if cookiecutter.components.webrtc %}webrtc {% endif %}{% if cookiecutter.components.mcp %}mcp {% endif %}{% if cookiecutter.components.shell %}shell {% endif %}
 
 # Konfiguracja projektu
 setup:
