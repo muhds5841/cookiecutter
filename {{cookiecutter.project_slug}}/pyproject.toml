@@ -7,21 +7,59 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^{{ cookiecutter.python_version }}"
-# Protokoły komunikacyjne
-paho-mqtt = "^2.2.1"            # MQTT
-websockets = "^11.0.3"          # WebSocket
-fastapi = "^0.104.0"            # REST API
-uvicorn = "^0.23.2"             # ASGI serwer
-pyftpdlib = "^1.5.9"            # FTP serwer
-paramiko = "^3.3.1"             # SSH klient/serwer
-imaplib2 = "^3.6"               # IMAP klient
-aiosmtplib = "^2.0.2"           # SMTP klient (async)
-poplib3 = "^1.0.0"              # POP3 klient
 
-# Monitorowanie i metryki
-prometheus-client = "^0.17.1"   # Prometheus metryki
+# Podstawowe zależności
 pyaml = "^23.5.9"               # Obsługa YAML
 loguru = "^0.7.2"               # Zaawansowane logowanie
+prometheus-client = "^0.17.1"   # Prometheus metryki
+
+{% if cookiecutter.use_mqtt == 'yes' %}
+# MQTT
+paho-mqtt = "^2.2.1"            # MQTT
+{% endif %}
+
+{% if cookiecutter.use_websocket == 'yes' or cookiecutter.use_webrtc == 'yes' %}
+# WebSocket
+websockets = "^11.0.3"          # WebSocket
+{% endif %}
+
+{% if cookiecutter.use_rest == 'yes' %}
+# REST API
+fastapi = "^0.104.0"            # REST API
+uvicorn = "^0.23.2"             # ASGI serwer
+{% endif %}
+
+{% if cookiecutter.use_ftp == 'yes' %}
+# FTP
+pyftpdlib = "^1.5.9"            # FTP serwer
+{% endif %}
+
+{% if cookiecutter.use_ssh == 'yes' %}
+# SSH
+paramiko = "^3.3.1"             # SSH klient/serwer
+{% endif %}
+
+{% if cookiecutter.use_imap == 'yes' %}
+# IMAP
+imaplib2 = "^3.6"               # IMAP klient
+{% endif %}
+
+{% if cookiecutter.use_smtp == 'yes' %}
+# SMTP
+aiosmtplib = "^2.0.2"           # SMTP klient (async)
+{% endif %}
+
+{% if cookiecutter.use_pop3 == 'yes' %}
+# POP3
+poplib3 = "^1.0.0"              # POP3 klient
+{% endif %}
+
+{% if cookiecutter.use_grpc == 'yes' %}
+# gRPC
+grpcio = "^1.59.0"              # gRPC
+grpcio-tools = "^1.59.0"        # gRPC narzędzia
+protobuf = "^4.24.4"            # Protocol Buffers
+{% endif %}
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
