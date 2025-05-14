@@ -156,7 +156,8 @@ class MetricsCollector:
                 
                 # Dodaj kubełki
                 for bucket, count in histogram["buckets"].items():
-                    lines.append(f"{name}_bucket{{{{le=\"{bucket}\"}}}} {count}")
+                    bucket_line = f"{name}_bucket" + "{{le=\"" + str(bucket) + "\"}} " + str(count)
+                    lines.append(bucket_line)
                 
                 # Dodaj sumę i liczbę
                 lines.append(f"{name}_sum {histogram['sum']}")
