@@ -1,18 +1,14 @@
 """Implementacja wykrywania narzędzi MCP."""
 
-from typing import Dict, Any, List, Optional, Callable
 import json
+from typing import Any, Callable, Dict, List, Optional
 
 
 class MCPTool:
     """Reprezentacja narzędzia MCP."""
 
     def __init__(
-            self,
-            name: str,
-            description: str,
-            schema: Dict[str, Any],
-            handler: Callable = None
+        self, name: str, description: str, schema: Dict[str, Any], handler: Callable = None
     ):
         """
         Inicjalizuje narzędzie MCP.
@@ -36,11 +32,7 @@ class MCPTool:
         Returns:
             Reprezentacja narzędzia jako słownik
         """
-        return {
-            "name": self.name,
-            "description": self.description,
-            "schema": self.schema
-        }
+        return {"name": self.name, "description": self.description, "schema": self.schema}
 
     def execute(self, parameters: Dict[str, Any]) -> Any:
         """

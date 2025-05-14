@@ -3,7 +3,7 @@
 import asyncio
 import json
 import sys
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
 
 class StdioTransport:
@@ -75,9 +75,7 @@ class StdioTransport:
                     return {"error": "Discovery not implemented"}
 
                 tools = self.discovery_provider.get_tools()
-                return {
-                    "tools": [tool.to_dict() for tool in tools]
-                }
+                return {"tools": [tool.to_dict() for tool in tools]}
 
             elif command == "execute":
                 # Obsługa wykonywania narzędzi

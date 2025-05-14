@@ -4,7 +4,7 @@ import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Optional, Union, Dict
+from typing import Dict, List, Optional, Union
 
 
 def run_pylint(paths: List[str], rcfile: Optional[Path] = None) -> int:
@@ -40,9 +40,7 @@ def run_flake8(paths: List[str], config: Optional[Path] = None) -> int:
 
 
 def run_linters(
-        paths: List[str],
-        config_dir: Optional[Path] = None,
-        linters: List[str] = ["pylint", "flake8"]
+    paths: List[str], config_dir: Optional[Path] = None, linters: List[str] = ["pylint", "flake8"]
 ) -> Dict[str, int]:
     """
     Uruchamia wybrane lintery dla podanych ścieżek.
@@ -79,8 +77,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Uruchamia lintery dla kodu Python")
     parser.add_argument("paths", nargs="+", help="Ścieżki do sprawdzenia")
     parser.add_argument("--config-dir", help="Katalog z konfiguracjami linterów")
-    parser.add_argument("--linters", nargs="+", default=["pylint", "flake8"],
-                        help="Lintery do uruchomienia")
+    parser.add_argument(
+        "--linters", nargs="+", default=["pylint", "flake8"], help="Lintery do uruchomienia"
+    )
 
     args = parser.parse_args()
 

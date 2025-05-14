@@ -1,20 +1,21 @@
 """Implementacja serwera MCP dla integracji z systemem Process."""
 
 import asyncio
-import sys
 import logging
+import sys
 from pathlib import Path
-from typing import Dict, Any, Optional, List, Type
+from typing import Any, Dict, List, Optional, Type
 
 # Dodajemy katalog główny projektu do ścieżki importu
 sys.path.append(str(Path(__file__).parent.parent))
 
 from lib.config import load_config
 from lib.logging import setup_logger
-from mcp.protocol.negotiation import ProtocolNegotiator
+
 from mcp.protocol.discovery import ToolDiscovery
-from mcp.tools.process_tool import ProcessToolProvider
+from mcp.protocol.negotiation import ProtocolNegotiator
 from mcp.resources.uri_templates import ResourceRegistry
+from mcp.tools.process_tool import ProcessToolProvider
 from mcp.transports.hybrid import HybridServer
 
 logger = setup_logger("mcp_server")
@@ -38,9 +39,7 @@ class MCPServer:
         self.resource_registry = ResourceRegistry()
 
         # Inicjalizacja dostawców narzędzi
-        self.tool_providers = [
-            ProcessToolProvider(config.get("process_config", {}))
-        ]
+        self.tool_providers = [ProcessToolProvider(config.get("process_config", {}))]
 
         # Inicjalizacja transportu
         transport_config = config.get("transport", {})
@@ -48,7 +47,7 @@ class MCPServer:
             port=transport_config.get("port", 4000),
             use_sse=transport_config.get("use_sse", True),
             use_stdio=transport_config.get("use_stdio", True),
-            use_grpc=transport_config.get("use_grpc", False)
+            use_grpc=transport_config.get("use_grpc", False),
         )
 
     async def start(self):

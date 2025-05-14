@@ -20,7 +20,7 @@ components = [
     "{{ cookiecutter.components.rest }}",
     "{{ cookiecutter.components.webrtc }}",
     "{{ cookiecutter.components.mcp }}",
-    "{{ cookiecutter.components.shell }}"
+    "{{ cookiecutter.components.shell }}",
 ]
 
 if all(comp.lower() == "false" for comp in components):

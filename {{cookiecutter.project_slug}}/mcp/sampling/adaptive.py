@@ -1,9 +1,10 @@
 """Implementacja adaptacyjnego próbkowania dla LLM."""
 
-from collections import deque
-import time
 import random
-from typing import Dict, Any, List, Optional, Deque
+import time
+from collections import deque
+from typing import Any, Deque, Dict, List, Optional
+
 import numpy as np
 
 
@@ -64,15 +65,14 @@ class AdaptiveSampler:
         """
         if not self.history:
             # Brak historii, użyj parametrów bazowych
-            return {
-                "temperature": self.base_temperature,
-                "top_p": self.base_top_p
-            }
+            return {"temperature": self.base_temperature, "top_p": self.base_top_p}
 
         # Obliczenie średnich wartości z historii
         recent_history = list(self.history)[-20:]  # Ostatnie 20 próbek
         avg_latency = np.mean([h.latency for h in recent_history]) if recent_history else 0
-        success_rate = np.mean([float(h.success) for h in recent_history]) if recent_history else 1.0
+        success_rate = (
+            np.mean([float(h.success) for h in recent_history]) if recent_history else 1.0
+        )
 
         # Dostosowanie parametrów na podstawie wyników
         temperature = self.base_temperature
@@ -90,10 +90,7 @@ class AdaptiveSampler:
         elif success_rate > 0.95:
             top_p = max(self.min_top_p, self.base_top_p - 0.05)
 
-        return {
-            "temperature": round(temperature, 2),
-            "top_p": round(top_p, 2)
-        }
+        return {"temperature": round(temperature, 2), "top_p": round(top_p, 2)}
 
 
 class SamplingManager:
@@ -107,7 +104,7 @@ class SamplingManager:
         self.samplers = {
             "adaptive": AdaptiveSampler(),
             "conservative": AdaptiveSampler(),
-            "creative": AdaptiveSampler()
+            "creative": AdaptiveSampler(),
         }
 
         # Konfiguracja dla różnych profili
@@ -132,13 +129,7 @@ class SamplingManager:
 
         return self.samplers[profile].get_sampling_params()
 
-    def record_sampling_result(
-            self,
-            profile: str,
-            latency: float,
-            tokens: int,
-            success: bool
-    ):
+    def record_sampling_result(self, profile: str, latency: float, tokens: int, success: bool):
         """
         Zapisuje wynik próbkowania dla podanego profilu.
 

@@ -3,14 +3,10 @@
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 
-def run_bandit(
-        paths: List[str],
-        config: Optional[Path] = None,
-        level: str = "medium"
-) -> int:
+def run_bandit(paths: List[str], config: Optional[Path] = None, level: str = "medium") -> int:
     """Uruchamia Bandit dla podanych ścieżek."""
     cmd = ["bandit", "-r"]
 
@@ -32,9 +28,7 @@ def run_bandit(
 
 
 def run_security_checks(
-        paths: List[str],
-        config_dir: Optional[Path] = None,
-        level: str = "medium"
+    paths: List[str], config_dir: Optional[Path] = None, level: str = "medium"
 ) -> Dict[str, int]:
     """
     Uruchamia narzędzia analizy bezpieczeństwa dla podanych ścieżek.
@@ -54,11 +48,7 @@ def run_security_checks(
         config_dir = Path(__file__).parent.parent.parent / "quality"
 
     bandit_config = config_dir / "bandit.yaml"
-    results["bandit"] = run_bandit(
-        paths,
-        bandit_config if bandit_config.exists() else None,
-        level
-    )
+    results["bandit"] = run_bandit(paths, bandit_config if bandit_config.exists() else None, level)
 
     return results
 
@@ -72,8 +62,9 @@ if __name__ == "__main__":
     )
     parser.add_argument("paths", nargs="+", help="Ścieżki do sprawdzenia")
     parser.add_argument("--config-dir", help="Katalog z konfiguracjami")
-    parser.add_argument("--level", choices=["low", "medium", "high"], default="medium",
-                        help="Poziom ważności")
+    parser.add_argument(
+        "--level", choices=["low", "medium", "high"], default="medium", help="Poziom ważności"
+    )
 
     args = parser.parse_args()
 

@@ -1,8 +1,8 @@
-from typing import List, Dict, Any
-import sys
 import os
+import sys
+from typing import Any, Dict, List
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 from process.process import ProcessEngine
 
 
@@ -23,6 +23,6 @@ class VoiceResource:
         voices = self.process.get_available_voices()
 
         if language:
-            voices = [v for v in voices if v.get('language') == language]
+            voices = [v for v in voices if v.get("language") == language]
 
         return voices

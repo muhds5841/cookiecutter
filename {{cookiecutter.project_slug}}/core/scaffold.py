@@ -3,8 +3,8 @@
 import argparse
 import os
 import sys
-from pathlib import Path
 import textwrap
+from pathlib import Path
 
 
 def generate_adapter(name, process):
@@ -16,7 +16,8 @@ def generate_adapter(name, process):
         print(f"Plik {file_path} już istnieje!", file=sys.stderr)
         return 1
 
-    content = textwrap.dedent(f'''
+    content = textwrap.dedent(
+        f'''
     """Adapter dla silnika Process {process}."""
 
     from typing import Dict, Any, Optional
@@ -68,11 +69,18 @@ def generate_adapter(name, process):
                 Lista dostępnych głosów z metadanymi
             """
             # Tutaj dodać kod pobierania listy głosów specyficzny dla {process}
-            return [
-                {{"name": "default", "language": "en-US", "gender": "female"}},
-                # Dodać więcej głosów dostępnych w {engine}
-            ]
-    ''').strip()
+            # Unikamy podwójnych nawiasów klamrowych, które powodują konflikt z Jinja2
+            voices = []
+            # Dodajemy głos domyślny
+            default_voice = dict()
+            default_voice["name"] = "default"
+            default_voice["language"] = "en-US"
+            default_voice["gender"] = "female"
+            voices.append(default_voice)
+            # Tutaj można dodać więcej głosów dostępnych w {process}
+            return voices
+    '''
+    ).strip()
 
     # Tworzenie katalogu, jeśli nie istnieje
     file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -119,8 +127,9 @@ def main():
     subparsers = parser.add_subparsers(dest="command", help="Polecenie do wykonania")
 
     # Parser dla komendy generate-adapter
-    adapter_parser = subparsers.add_parser("generate-adapter",
-                                           help="Generuje adapter dla silnika Process")
+    adapter_parser = subparsers.add_parser(
+        "generate-adapter", help="Generuje adapter dla silnika Process"
+    )
     adapter_parser.add_argument("--name", required=True, help="Nazwa adaptera")
     adapter_parser.add_argument("--engine", required=True, help="Nazwa silnika Process")
 

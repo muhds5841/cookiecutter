@@ -4,20 +4,23 @@ Serwer gRPC dla usługi Process.
 
 import os
 import sys
-import grpc
 import time
 from concurrent import futures
-from typing import Dict, Any
+from typing import Any, Dict
+
+import grpc
 
 # Dodaj katalog nadrzędny do ścieżki, aby umożliwić import z process i lib
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from lib.config import load_config
+from lib.logging import configure_logging, get_logger
 
 from process.process import Process
-from lib.config import load_config
-from lib.logging import get_logger, configure_logging
 
 # Importy wygenerowane z proto (będą dostępne po wygenerowaniu kodu z proto)
 # from proto.generated import process_pb2, process_pb2_grpc
+
 
 # Tymczasowa implementacja klas protobuf do czasu wygenerowania ich z pliku .proto
 class ProcessRequest:
@@ -27,12 +30,14 @@ class ProcessRequest:
         self.resource = resource
         self.output_format = output_format
 
+
 class ProcessResponse:
     def __init__(self, result_id="", format="", data="", metadata=None):
         self.result_id = result_id
         self.format = format
         self.data = data
         self.metadata = metadata or {}
+
 
 class ResourceInfo:
     def __init__(self, id="", name="", type="", metadata=None):
@@ -41,76 +46,78 @@ class ResourceInfo:
         self.type = type
         self.metadata = metadata or {}
 
+
 class ResourcesResponse:
     def __init__(self, resources=None):
         self.resources = resources or []
+
 
 class LanguagesResponse:
     def __init__(self, languages=None):
         self.languages = languages or []
 
+
 class EmptyRequest:
     pass
+
 
 # Tymczasowa implementacja serwisu gRPC do czasu wygenerowania kodu z proto
 class ProcessServiceServicer:
     """Implementacja serwisu TTS dla gRPC."""
-    
+
     def __init__(self, process: Process):
         self.process = process
         self.logger = get_logger("grpc.server")
-    
+
     def Synthesize(self, request, context):
         """Konwertuje tekst na mowę."""
         self.logger.info(f"Otrzymano żądanie syntezy: {request.text[:50]}...")
-        
+
         try:
             parameters = {
                 "text": request.text,
                 "language": request.language if request.language else None,
                 "voice": request.voice if request.voice else None,
-                "format": request.format if request.format else "wav"
+                "format": request.format if request.format else "wav",
             }
-            
+
             result = self.process.run(parameters)
-            
+
             return TtsResponse(
-                audio_id=result["audio_id"],
-                format=result["format"],
-                base64=result["base64"]
+                audio_id=result["audio_id"], format=result["format"], base64=result["base64"]
             )
         except Exception as e:
             self.logger.error(f"Błąd podczas syntezy: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             return TtsResponse()
-    
+
     def GetVoices(self, request, context):
         """Pobiera listę dostępnych głosów."""
         self.logger.info("Otrzymano żądanie pobrania głosów")
-        
+
         try:
             voices = self.process.get_available_voices()
             voice_infos = []
-            
+
             for voice in voices:
-                voice_infos.append(VoiceInfo(
-                    name=voice["name"],
-                    language=voice["language"],
-                    gender=voice["gender"]
-                ))
-            
+                voice_infos.append(
+                    VoiceInfo(
+                        name=voice["name"], language=voice["language"], gender=voice["gender"]
+                    )
+                )
+
             return VoicesResponse(voices=voice_infos)
         except Exception as e:
             self.logger.error(f"Błąd podczas pobierania głosów: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             return VoicesResponse()
-    
+
     def GetLanguages(self, request, context):
         """Pobiera listę dostępnych języków."""
         self.logger.info("Otrzymano żądanie pobrania języków")
-        
+
         try:
             languages = self.process.get_available_languages()
             return LanguagesResponse(languages=languages)
@@ -125,31 +132,31 @@ def serve():
     """Uruchamia serwer gRPC."""
     # Załaduj konfigurację
     config = load_config()
-    
+
     # Skonfiguruj logowanie
     logger = configure_logging(
         level=config.get("GRPC_LOG_LEVEL", "info"),
         component_name="grpc",
-        log_dir=config.get("GRPC_LOG_DIR")
+        log_dir=config.get("GRPC_LOG_DIR"),
     )
-    
+
     # Utwórz instancję procesu
     process = Process()
-    
+
     # Utwórz serwer gRPC
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    
+
     # Dodaj usługę TTS do serwera
     # tts_pb2_grpc.add_TtsServiceServicer_to_server(TtsServiceServicer(process), server)
-    
+
     # Pobierz port z konfiguracji lub użyj domyślnego
     port = config.get("GRPC_PORT", 50051)
-    server.add_insecure_port(f'[::]:{port}')
-    
+    server.add_insecure_port(f"[::]:{port}")
+
     # Uruchom serwer
     server.start()
     logger.info(f"Serwer gRPC uruchomiony na porcie {port}")
-    
+
     try:
         # Serwer działa w tle, więc musimy trzymać główny wątek aktywny
         while True:

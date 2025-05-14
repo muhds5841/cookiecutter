@@ -1,7 +1,7 @@
 """Implementacja URI templates dla zasobów MCP."""
 
 import re
-from typing import Dict, Any, List, Optional, Callable, Pattern, Tuple
+from typing import Any, Callable, Dict, List, Optional, Pattern, Tuple
 
 
 class URITemplate:

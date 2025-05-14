@@ -3,15 +3,15 @@
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 
 def run_pytest(
-        paths: List[str] = ["tests"],
-        config: Optional[Path] = None,
-        coverage: bool = True,
-        markers: Optional[List[str]] = None,
-        extra_args: Optional[List[str]] = None
+    paths: List[str] = ["tests"],
+    config: Optional[Path] = None,
+    coverage: bool = True,
+    markers: Optional[List[str]] = None,
+    extra_args: Optional[List[str]] = None,
 ) -> int:
     """Uruchamia pytest dla podanych ścieżek."""
     cmd = ["pytest"]
@@ -35,10 +35,7 @@ def run_pytest(
     return result.returncode
 
 
-def run_tox(
-        envs: Optional[List[str]] = None,
-        config: Optional[Path] = None
-) -> int:
+def run_tox(envs: Optional[List[str]] = None, config: Optional[Path] = None) -> int:
     """Uruchamia tox dla podanych środowisk."""
     cmd = ["tox"]
 
@@ -54,13 +51,13 @@ def run_tox(
 
 
 def run_tests(
-        test_type: str = "pytest",
-        paths: List[str] = ["tests"],
-        config_dir: Optional[Path] = None,
-        coverage: bool = True,
-        markers: Optional[List[str]] = None,
-        tox_envs: Optional[List[str]] = None,
-        extra_args: Optional[List[str]] = None
+    test_type: str = "pytest",
+    paths: List[str] = ["tests"],
+    config_dir: Optional[Path] = None,
+    coverage: bool = True,
+    markers: Optional[List[str]] = None,
+    tox_envs: Optional[List[str]] = None,
+    extra_args: Optional[List[str]] = None,
 ) -> int:
     """
     Uruchamia testy wybranym narzędziem.
@@ -84,18 +81,11 @@ def run_tests(
     if test_type == "pytest":
         pytest_config = config_dir / "pytest.ini"
         return run_pytest(
-            paths,
-            pytest_config if pytest_config.exists() else None,
-            coverage,
-            markers,
-            extra_args
+            paths, pytest_config if pytest_config.exists() else None, coverage, markers, extra_args
         )
     elif test_type == "tox":
         tox_config = config_dir / "tox.ini"
-        return run_tox(
-            tox_envs,
-            tox_config if tox_config.exists() else None
-        )
+        return run_tox(tox_envs, tox_config if tox_config.exists() else None)
     else:
         print(f"Nieznany typ testu: {test_type}", file=sys.stderr)
         return 1
@@ -106,13 +96,14 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description="Uruchamia testy dla kodu Python")
-    parser.add_argument("--test-type", choices=["pytest", "tox"], default="pytest",
-                        help="Typ testu do uruchomienia")
-    parser.add_argument("--paths", nargs="+", default=["tests"],
-                        help="Ścieżki do testowania (dla pytest)")
+    parser.add_argument(
+        "--test-type", choices=["pytest", "tox"], default="pytest", help="Typ testu do uruchomienia"
+    )
+    parser.add_argument(
+        "--paths", nargs="+", default=["tests"], help="Ścieżki do testowania (dla pytest)"
+    )
     parser.add_argument("--config-dir", help="Katalog z konfiguracjami")
-    parser.add_argument("--no-coverage", action="store_true",
-                        help="Nie mierz pokrycia kodu")
+    parser.add_argument("--no-coverage", action="store_true", help="Nie mierz pokrycia kodu")
     parser.add_argument("--markers", nargs="+", help="Markery testów (dla pytest)")
     parser.add_argument("--tox-envs", nargs="+", help="Środowiska tox do uruchomienia")
     parser.add_argument("--extra-args", nargs="+", help="Dodatkowe argumenty")
@@ -127,7 +118,7 @@ if __name__ == "__main__":
         not args.no_coverage,
         args.markers,
         args.tox_envs,
-        args.extra_args
+        args.extra_args,
     )
 
     sys.exit(exit_code)

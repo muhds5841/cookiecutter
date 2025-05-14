@@ -2,9 +2,9 @@
 """Skrypt uruchamiany po wygenerowaniu projektu."""
 
 import os
+import shutil
 import subprocess
 import sys
-import shutil
 from pathlib import Path
 
 # Usunięcie komponentów, które nie zostały wybrane
@@ -14,7 +14,7 @@ components = {
     "rest": {{cookiecutter.components.rest}},
     "webrtc": {{cookiecutter.components.webrtc}},
     "mcp": {{cookiecutter.components.mcp}},
-    "shell": {{cookiecutter.components.shell}}
+    "shell": {{cookiecutter.components.shell}},
 }
 
 for component, is_selected in components.items():
@@ -28,7 +28,7 @@ if components["mcp"]:
     mcp_transports = {
         "sse": {{cookiecutter.mcp_configuration.transports.sse}},
         "stdio": {{cookiecutter.mcp_configuration.transports.stdio}},
-        "grpc": {{cookiecutter.mcp_configuration.transports.grpc}}
+        "grpc": {{cookiecutter.mcp_configuration.transports.grpc}},
     }
 
     # Usuń transporty, które nie zostały wybrane
@@ -47,9 +47,7 @@ if components["mcp"]:
             print("Usunięto moduł wykrywania narzędzi MCP")
 
     if not {{cookiecutter.mcp_configuration.include_tool_registry}}:
-        tool_registry_files = [
-            Path("mcp/resources/uri_templates.py")
-        ]
+        tool_registry_files = [Path("mcp/resources/uri_templates.py")]
         for file in tool_registry_files:
             if file.exists():
                 file.unlink()

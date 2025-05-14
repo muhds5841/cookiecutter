@@ -2,12 +2,12 @@
 
 import asyncio
 import json
-from typing import Dict, Any, Optional, Callable, List
+from typing import Any, Callable, Dict, List, Optional
 
-from fastapi import FastAPI, Request, Response, HTTPException
+import uvicorn
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sse_starlette.sse import EventSourceResponse
-import uvicorn
 
 
 class SSETransport:
@@ -53,9 +53,7 @@ class SSETransport:
                 raise HTTPException(status_code=501, detail="Discovery not implemented")
 
             tools = self.discovery_provider.get_tools()
-            return {
-                "tools": [tool.to_dict() for tool in tools]
-            }
+            return {"tools": [tool.to_dict() for tool in tools]}
 
         @self.app.post("/mcp/execute/{tool_name}")
         async def execute_tool(tool_name: str, request: Request):
@@ -89,9 +87,7 @@ class SSETransport:
                             tools = self.discovery_provider.get_tools()
                             yield {
                                 "event": "tools",
-                                "data": json.dumps({
-                                    "tools": [tool.to_dict() for tool in tools]
-                                })
+                                "data": json.dumps({"tools": [tool.to_dict() for tool in tools]}),
                             }
 
                         # Czekanie przed wysłaniem kolejnej wiadomości

@@ -3,7 +3,7 @@
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Optional, Dict, Union
+from typing import Dict, List, Optional, Union
 
 
 def run_black(paths: List[str], check: bool = False, config: Optional[Path] = None) -> int:
@@ -43,10 +43,10 @@ def run_isort(paths: List[str], check: bool = False, config: Optional[Path] = No
 
 
 def run_formatters(
-        paths: List[str],
-        check: bool = False,
-        config_file: Optional[Path] = None,
-        formatters: List[str] = ["black", "isort"]
+    paths: List[str],
+    check: bool = False,
+    config_file: Optional[Path] = None,
+    formatters: List[str] = ["black", "isort"],
 ) -> Dict[str, int]:
     """
     Uruchamia wybrane formatery dla podanych ścieżek.
@@ -79,8 +79,9 @@ if __name__ == "__main__":
     parser.add_argument("paths", nargs="+", help="Ścieżki do sformatowania")
     parser.add_argument("--check", action="store_true", help="Tylko sprawdza formatowanie")
     parser.add_argument("--config", help="Plik konfiguracyjny")
-    parser.add_argument("--formatters", nargs="+", default=["black", "isort"],
-                        help="Formatery do uruchomienia")
+    parser.add_argument(
+        "--formatters", nargs="+", default=["black", "isort"], help="Formatery do uruchomienia"
+    )
 
     args = parser.parse_args()
 

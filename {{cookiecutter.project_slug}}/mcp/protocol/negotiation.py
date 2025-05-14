@@ -1,6 +1,6 @@
 """Obsługa negocjacji wersji protokołu MCP."""
 
-from typing import List, Dict, Optional, Any
+from typing import Any, Dict, List, Optional
 
 
 class ProtocolNegotiator:
@@ -45,6 +45,4 @@ class ProtocolNegotiator:
         Returns:
             Nagłówki protokołu
         """
-        return {
-            "mcp-versions": ",".join(sorted(self.supported_versions, reverse=True))
-        }
+        return {"mcp-versions": ",".join(sorted(self.supported_versions, reverse=True))}

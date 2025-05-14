@@ -1,13 +1,14 @@
 """Implementacja procesu przetwarzania (Process)."""
 
-import os
 import base64
-from typing import Dict, Any, Optional, List, Protocol, Union
+import os
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Protocol, Union
 
 from lib.config import load_config
 from lib.logging import get_logger
-from lib.utils import generate_id, create_temp_file
+from lib.utils import create_temp_file, generate_id
+
 from process.process_base import ProcessBase
 
 
@@ -35,7 +36,7 @@ class Engine(Protocol):
             Lista dostępnych zasobów z metadanymi
         """
         ...
-        
+
     def get_available_languages(self) -> List[str]:
         """
         Pobiera listę dostępnych języków.
@@ -49,7 +50,9 @@ class Engine(Protocol):
 class ProcessResult:
     """Klasa reprezentująca wynik przetwarzania."""
 
-    def __init__(self, result_data: bytes, format: str = "wav", metadata: Optional[Dict[str, Any]] = None):
+    def __init__(
+        self, result_data: bytes, format: str = "wav", metadata: Optional[Dict[str, Any]] = None
+    ):
         """
         Inicjalizuje wynik przetwarzania.
 
@@ -108,7 +111,9 @@ class ProcessResult:
         return self._file_path
 
     def __str__(self) -> str:
-        return f"ProcessResult(id={self.id}, format={self.format}, size={len(self.result_data)} bytes)"
+        return (
+            f"ProcessResult(id={self.id}, format={self.format}, size={len(self.result_data)} bytes)"
+        )
 
 
 class DefaultEngine:
@@ -155,7 +160,7 @@ class DefaultEngine:
         return [
             {"name": "default", "language": "en-US", "type": "standard"},
             {"name": "resource1", "language": "en-US", "type": "enhanced"},
-            {"name": "resource2", "language": "pl-PL", "type": "standard"}
+            {"name": "resource2", "language": "pl-PL", "type": "standard"},
         ]
 
     def get_available_languages(self) -> List[str]:
@@ -180,7 +185,7 @@ class Process(ProcessBase):
 
     def initialize(self, config: Dict[str, Any]) -> None:
         """Initialize the Process with the given configuration.
-        
+
         Args:
             config: Configuration dictionary for the Process
         """
@@ -192,7 +197,7 @@ class Process(ProcessBase):
 
         Args:
             config: Konfiguracja silnika
-            
+
         Returns:
             Instancja silnika przetwarzania
         """
@@ -213,30 +218,21 @@ class Process(ProcessBase):
         return {
             "type": "object",
             "properties": {
-                "text": {
-                    "type": "string",
-                    "description": "Tekst do przetworzenia"
-                },
-                "config": {
-                    "type": "object",
-                    "description": "Konfiguracja przetwarzania"
-                },
+                "text": {"type": "string", "description": "Tekst do przetworzenia"},
+                "config": {"type": "object", "description": "Konfiguracja przetwarzania"},
                 "output_format": {
                     "type": "string",
                     "description": "Format wyjściowy (wav, mp3, json)",
-                    "enum": ["wav", "mp3", "json"]
+                    "enum": ["wav", "mp3", "json"],
                 },
-                "save_to_file": {
-                    "type": "boolean",
-                    "description": "Czy zapisać wynik do pliku"
-                },
+                "save_to_file": {"type": "boolean", "description": "Czy zapisać wynik do pliku"},
                 "output_dir": {
                     "type": "string",
-                    "description": "Katalog, w którym ma być zapisany plik"
-                }
+                    "description": "Katalog, w którym ma być zapisany plik",
+                },
             },
             "required": ["text"],
-            "additionalProperties": False
+            "additionalProperties": False,
         }
 
     def run(self, parameters: Dict[str, Any]) -> Dict[str, Any]:
@@ -278,28 +274,24 @@ class Process(ProcessBase):
             self.logger.info(f"Zapisano wynik do pliku: {file_path}")
 
         # Przygotowanie odpowiedzi
-        response = {
-            "result_id": result.id,
-            "format": result.format,
-            "base64": result.get_base64()
-        }
+        response = {"result_id": result.id, "format": result.format, "base64": result.get_base64()}
 
         if result.get_file_path():
             response["file_path"] = result.get_file_path()
-            
+
         # Cache the result for later retrieval
         self.resource_cache[result.id] = {
             "id": result.id,
             "data": result_data,
             "format": output_format,
-            "metadata": result.metadata
+            "metadata": result.metadata,
         }
 
         return response
 
     def get_available_resources(self) -> List[Dict[str, Any]]:
         """Get a list of available resources for this Process.
-        
+
         Returns:
             List of dictionaries, each representing a resource
             Each dictionary must include 'name' and 'type' keys
@@ -313,21 +305,21 @@ class Process(ProcessBase):
             Lista kodów języków (np. 'en-US', 'pl-PL')
         """
         return self.engine.get_available_languages()
-        
+
     def get_resource_by_id(self, resource_id: str) -> Optional[Dict[str, Any]]:
         """Get a specific resource by its ID.
-        
+
         Args:
             resource_id: Unique identifier for the resource
-        
+
         Returns:
             Dictionary containing the resource data, or None if not found
         """
         return self.resource_cache.get(resource_id)
-        
+
     def get_status(self) -> Dict[str, Any]:
         """Get the current status of the Process.
-        
+
         Returns:
             Dictionary containing status information
                 Must include 'status' key with a string value
@@ -339,13 +331,13 @@ class Process(ProcessBase):
             "version": "1.0.0",
             "engine_type": self.config.get("PROCESS_ENGINE", "default"),
             "resources_count": len(self.get_available_resources()),
-            "languages_count": len(self.get_available_languages())
+            "languages_count": len(self.get_available_languages()),
         }
 
 
 class DefaultProcess(Process):
     """Domyślna implementacja procesu przetwarzania."""
-    
+
     def __init__(self):
         """Inicjalizuje domyślny proces przetwarzania."""
         super().__init__()

@@ -2,28 +2,29 @@
 Serwer REST dla usługi Process.
 """
 
+import json
 import os
 import sys
-import json
-from typing import Dict, Any, Optional, List
+from typing import Any, Dict, List, Optional
 
 # Dodaj katalog nadrzędny do ścieżki, aby umożliwić import z process i lib
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
+from lib.config import load_config
+from lib.logging import configure_logging, get_logger
 from pydantic import BaseModel, Field
-import uvicorn
 
 from process.process import Process
-from lib.config import load_config
-from lib.logging import get_logger, configure_logging
 
 
 # Modele danych
 class ProcessRequest(BaseModel):
     """Model żądania przetwarzania tekstu."""
+
     text: str = Field(..., description="Tekst do przetworzenia")
     language: Optional[str] = Field(None, description="Kod języka (np. 'en-US', 'pl-PL')")
     resource: Optional[str] = Field(None, description="Identyfikator zasobu do użycia")
@@ -32,6 +33,7 @@ class ProcessRequest(BaseModel):
 
 class ProcessResponse(BaseModel):
     """Model odpowiedzi z wynikiem przetwarzania."""
+
     result_id: str = Field(..., description="Identyfikator wygenerowanego wyniku")
     format: str = Field(..., description="Format wyniku (wav, mp3, json)")
     data: str = Field(..., description="Dane wyniku zakodowane w base64")
@@ -40,6 +42,7 @@ class ProcessResponse(BaseModel):
 
 class ResourceInfo(BaseModel):
     """Model informacji o zasobie."""
+
     id: str = Field(..., description="Identyfikator zasobu")
     name: str = Field(..., description="Nazwa zasobu")
     type: str = Field(..., description="Typ zasobu")
@@ -48,19 +51,19 @@ class ResourceInfo(BaseModel):
 
 class ResourcesResponse(BaseModel):
     """Model odpowiedzi z listą dostępnych zasobów."""
+
     resources: List[ResourceInfo] = Field(..., description="Lista dostępnych zasobów")
 
 
 class LanguagesResponse(BaseModel):
     """Model odpowiedzi z listą dostępnych języków."""
+
     languages: List[str] = Field(..., description="Lista kodów języków (np. 'en-US', 'pl-PL')")
 
 
 # Aplikacja FastAPI
 app = FastAPI(
-    title="Process REST API",
-    description="REST API dla usługi Text-to-Speech",
-    version="0.1.0"
+    title="Process REST API", description="REST API dla usługi Text-to-Speech", version="0.1.0"
 )
 
 # Dodaj obsługę CORS
@@ -82,24 +85,22 @@ process = Process()
 async def synthesize(request: TtsRequest):
     """Konwertuje tekst na mowę."""
     logger.info(f"Otrzymano żądanie syntezy: {request.text[:50]}...")
-    
+
     try:
         parameters = {
             "text": request.text,
             "language": request.language,
             "voice": request.voice,
-            "format": request.format
+            "format": request.format,
         }
-        
+
         # Usuń None z parametrów
         parameters = {k: v for k, v in parameters.items() if v is not None}
-        
+
         result = process.run(parameters)
-        
+
         return TtsResponse(
-            audio_id=result["audio_id"],
-            format=result["format"],
-            base64=result["base64"]
+            audio_id=result["audio_id"], format=result["format"], base64=result["base64"]
         )
     except Exception as e:
         logger.error(f"Błąd podczas syntezy: {str(e)}")
@@ -110,20 +111,16 @@ async def synthesize(request: TtsRequest):
 async def get_voices():
     """Pobiera listę dostępnych głosów."""
     logger.info("Otrzymano żądanie pobrania głosów")
-    
+
     try:
         voices = process.get_available_voices()
-        
+
         # Konwersja do modelu Pydantic
         voice_infos = [
-            VoiceInfo(
-                name=voice["name"],
-                language=voice["language"],
-                gender=voice["gender"]
-            )
+            VoiceInfo(name=voice["name"], language=voice["language"], gender=voice["gender"])
             for voice in voices
         ]
-        
+
         return VoicesResponse(voices=voice_infos)
     except Exception as e:
         logger.error(f"Błąd podczas pobierania głosów: {str(e)}")
@@ -134,7 +131,7 @@ async def get_voices():
 async def get_languages():
     """Pobiera listę dostępnych języków."""
     logger.info("Otrzymano żądanie pobrania języków")
-    
+
     try:
         languages = process.get_available_languages()
         return LanguagesResponse(languages=languages)
@@ -147,21 +144,21 @@ async def get_languages():
 async def get_audio(audio_id: str, response: Response):
     """Pobiera audio na podstawie identyfikatora."""
     logger.info(f"Otrzymano żądanie pobrania audio: {audio_id}")
-    
+
     # W rzeczywistej implementacji tutaj byłoby pobieranie audio z bazy danych lub systemu plików
     # Na potrzeby przykładu zwracamy przykładowe dane audio
-    
+
     # Symulacja błędu, gdy audio_id nie zaczyna się od "audio-"
     if not audio_id.startswith("audio-"):
         raise HTTPException(status_code=404, detail=f"Audio o ID {audio_id} nie zostało znalezione")
-    
+
     # Przykładowe dane audio
     audio_data = b"SAMPLE_AUDIO_DATA"
-    
+
     # Ustawienie nagłówków odpowiedzi
     response.headers["Content-Disposition"] = f"attachment; filename={audio_id}.wav"
     response.headers["Content-Type"] = "audio/wav"
-    
+
     # Zwrócenie danych audio jako odpowiedź strumieniowa
     return StreamingResponse(iter([audio_data]), media_type="audio/wav")
 
@@ -176,18 +173,18 @@ def main():
     """Funkcja główna serwera REST."""
     # Załaduj konfigurację
     config = load_config()
-    
+
     # Skonfiguruj logowanie
     configure_logging(
         level=config.get("REST_LOG_LEVEL", "info"),
         component_name="rest",
-        log_dir=config.get("REST_LOG_DIR")
+        log_dir=config.get("REST_LOG_DIR"),
     )
-    
+
     # Pobierz port z konfiguracji lub użyj domyślnego
     host = config.get("REST_HOST", "0.0.0.0")
     port = int(config.get("REST_PORT", 5000))
-    
+
     # Uruchom serwer
     logger.info(f"Uruchamianie serwera REST na {host}:{port}")
     uvicorn.run(app, host=host, port=port)

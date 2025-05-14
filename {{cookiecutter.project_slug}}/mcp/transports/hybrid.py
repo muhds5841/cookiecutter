@@ -2,7 +2,7 @@
 
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from typing import Optional, Dict, Any, List
+from typing import Any, Dict, List, Optional
 
 from mcp.transports.sse import SSETransport
 from mcp.transports.stdio import StdioTransport
@@ -22,11 +22,7 @@ class HybridServer:
     """
 
     def __init__(
-            self,
-            port: int = 4000,
-            use_sse: bool = True,
-            use_stdio: bool = True,
-            use_grpc: bool = False
+        self, port: int = 4000, use_sse: bool = True, use_stdio: bool = True, use_grpc: bool = False
     ):
         """
         Inicjalizuje wieloprotokołowy serwer MCP.
