@@ -126,45 +126,54 @@ class MetricsCollector:
                     if value <= bucket:
                         histogram["buckets"][str(bucket)] += 1
     
-    def get_metrics(self) -> str:
+    def get_metrics(self):
         """Zwraca metryki w formacie Prometheus.
         
         Returns:
             Metryki w formacie Prometheus
         """
         with self.lock:
-            lines = []
+            # Używamy listy do budowania wyniku
+            result = []
+            
+            # Funkcja pomocnicza do dodawania metryk
+            def add_metric_header(name, metric_type, description):
+                result.append(f"# HELP {name} {description}")
+                result.append(f"# TYPE {name} {metric_type}")
             
             # Dodaj liczniki
             for name, counter in self.counters.items():
-                lines.append(f"# HELP {name} {counter['description']}")
-                lines.append(f"# TYPE {name} counter")
-                lines.append(f"{name} {counter['value']}")
-                lines.append("")
+                add_metric_header(name, "counter", counter['description'])
+                result.append(f"{name} {counter['value']}")
+                result.append("")
             
             # Dodaj wskaźniki
             for name, gauge in self.gauges.items():
-                lines.append(f"# HELP {name} {gauge['description']}")
-                lines.append(f"# TYPE {name} gauge")
-                lines.append(f"{name} {gauge['value']}")
-                lines.append("")
+                add_metric_header(name, "gauge", gauge['description'])
+                result.append(f"{name} {gauge['value']}")
+                result.append("")
             
             # Dodaj histogramy
             for name, histogram in self.histograms.items():
-                lines.append(f"# HELP {name} {histogram['description']}")
-                lines.append(f"# TYPE {name} histogram")
+                add_metric_header(name, "histogram", histogram['description'])
                 
-                # Dodaj kubełki
+                # Dodaj kubełki - unikamy używania nawiasów klamrowych w szablonie
+                # Zamiast tego używamy konkatenacji stringów
                 for bucket, count in histogram["buckets"].items():
-                    bucket_line = f"{name}_bucket" + "{{le=\"" + str(bucket) + "\"}} " + str(count)
-                    lines.append(bucket_line)
+                    # Używamy zmiennych dla nawiasów klamrowych
+                    open_brace = chr(123)  # kod ASCII dla {
+                    close_brace = chr(125)  # kod ASCII dla }
+                    # Budujemy linię bez użycia f-stringów z nawiasami
+                    bucket_line = name + "_bucket" + open_brace + "le=\"" + str(bucket) + "\"" + close_brace + " " + str(count)
+                    result.append(bucket_line)
                 
                 # Dodaj sumę i liczbę
-                lines.append(f"{name}_sum {histogram['sum']}")
-                lines.append(f"{name}_count {histogram['count']}")
-                lines.append("")
+                result.append(f"{name}_sum {histogram['sum']}")
+                result.append(f"{name}_count {histogram['count']}")
+                result.append("")
             
-            return "\n".join(lines)
+            # Połącz wszystkie linie w jeden string
+            return "\n".join(result)
     
     def start_server(self):
         """Uruchamia serwer HTTP dla metryk."""
