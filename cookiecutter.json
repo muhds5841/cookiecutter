@@ -4,7 +4,6 @@
   "project_description": "A modular text-to-speech system with MCP integration",
   "author_name": "Tom Sapletta",
   "author_email": "info@softreck.dev",
-  "license": ["MIT", "Apache-2.0", "GPL-3.0", "BSD-3-Clause"],
   "python_version": ["3.11", "3.10", "3.9"],
   "use_docker": ["yes", "no"],
   "use_process": ["yes", "no"],
