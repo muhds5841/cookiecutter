@@ -61,7 +61,8 @@ def main():
     
     # Sprawdzenie, które moduły należy usunąć
     for var_name, dir_name in MODULE_DIRS.items():
-        use_module = "{{ cookiecutter." + var_name + " }}"
+        # Pobieranie wartości zmiennej cookiecutter z kontekstu
+        use_module = "{{{{ cookiecutter.{} }}}}".format(var_name)
         
         if use_module.lower() == "no":
             # Usuń katalog modułu
