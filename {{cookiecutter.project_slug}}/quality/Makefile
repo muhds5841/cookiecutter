@@ -2,7 +2,7 @@
 
 PYTHON = python
 QUALITY_MODULE = lib.quality
-MODULES = tts_engine grpc rest webrtc mcp shell
+MODULES = process grpc rest webrtc mcp shell
 CONFIG_DIR = quality
 
 # Domyślne środowisko
