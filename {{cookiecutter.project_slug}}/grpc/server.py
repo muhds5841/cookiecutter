@@ -11,12 +11,11 @@ from typing import Any, Dict
 # Dodaj katalog nadrzędny do ścieżki, aby umożliwić import z process i lib
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# Importy wewnętrzne
-from lib.config import load_config
-from lib.logging import configure_logging, get_logger
-
 # Importy bibliotek zewnętrznych
 import grpc
+# Importy wewnętrzne
+from core.config import load_config
+from core.logging import configure_logging, get_logger
 from process.process import Process
 
 # Importy wygenerowane z proto (będą dostępne po wygenerowaniu kodu z proto)

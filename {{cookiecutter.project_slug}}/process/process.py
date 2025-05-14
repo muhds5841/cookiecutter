@@ -5,10 +5,9 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Protocol, Union
 
-from lib.config import load_config
-from lib.logging import get_logger
-from lib.utils import create_temp_file, generate_id
-
+from core.config import load_config
+from core.logging import get_logger
+from core.utils import create_temp_file, generate_id
 from process.process_base import ProcessBase
 
 

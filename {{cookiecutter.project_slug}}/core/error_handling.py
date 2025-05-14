@@ -5,7 +5,7 @@ import traceback
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Type
 
-from lib.logging import get_logger
+from core.logging import get_logger
 
 
 class ErrorCode(Enum):

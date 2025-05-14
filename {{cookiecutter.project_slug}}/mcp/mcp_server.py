@@ -9,9 +9,8 @@ from typing import Any, Dict, List, Optional, Type
 # Dodajemy katalog główny projektu do ścieżki importu
 sys.path.append(str(Path(__file__).parent.parent))
 
-from lib.config import load_config
-from lib.logging import setup_logger
-
+from core.config import load_config
+from core.logging import setup_logger
 from mcp.protocol.discovery import ToolDiscovery
 from mcp.protocol.negotiation import ProtocolNegotiator
 from mcp.resources.uri_templates import ResourceRegistry

@@ -14,10 +14,10 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
-from lib.config import load_config
-from lib.logging import configure_logging, get_logger
 from pydantic import BaseModel, Field
 
+from core.config import load_config
+from core.logging import configure_logging, get_logger
 from process.process import Process
 
 

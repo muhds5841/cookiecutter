@@ -1,7 +1,7 @@
 .PHONY: setup build up down test clean quality format lint type-check
 
 PYTHON = python
-QUALITY_MODULE = lib.quality
+QUALITY_MODULE = quality
 MODULES = process grpc rest webrtc mcp shell
 CONFIG_DIR = quality
 

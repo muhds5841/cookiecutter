@@ -17,7 +17,7 @@ security:
 # Sprawdzanie dokumentacji
 doc-check:
 	@echo "Sprawdzanie dokumentacji kodu..."
-	$(PYTHON) -m lib.quality.custom.doc_checker $(MODULES)
+	$(PYTHON) -m quality.custom.doc_checker $(MODULES)
 
 
 # Zadania związane z jakością kodu

@@ -10,9 +10,8 @@ from typing import Any, Dict, List, Optional, Type, Union
 # Dodaj katalog nadrzędny do ścieżki, aby umożliwić import z process i lib
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from lib.config import load_config
-from lib.logging import get_logger
-
+from core.config import load_config
+from core.logging import get_logger
 from process.process import Process
 
 

@@ -12,9 +12,10 @@ from typing import Any, Dict, List, Optional, Union
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import requests
-from lib.config import load_config
-from lib.logging import configure_logging, get_logger
 from requests.exceptions import RequestException
+
+from core.config import load_config
+from core.logging import configure_logging, get_logger
 
 
 class ProcessClient:

@@ -6,8 +6,7 @@ import os
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Set, Type
 
-from lib.logging import get_logger
-
+from core.logging import get_logger
 from process.process_base import ProcessBase
 
 

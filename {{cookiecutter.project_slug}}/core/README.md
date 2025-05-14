@@ -224,7 +224,7 @@ make setup
 
 # Generowanie testów dla nowo utworzonego adaptera
 ```bash
-python -m lib.scaffold generate-tests --file process/adapters/amazon.py
+python -m scaffold generate-tests --file process/adapters/amazon.py
 ```
 
 

@@ -40,7 +40,7 @@ base64_data = result["base64"]
 The Process component can be configured through environment variables, configuration files, or directly in code:
 
 ```python
-from lib.config_manager import create_config_manager
+from core.config_manager import create_config_manager
 from process.process import Process
 
 # Create a configuration manager
@@ -165,7 +165,7 @@ class MyHookPlugin(PluginBase):
 The Process component includes standardized error handling through the `lib.error_handling` module:
 
 ```python
-from lib.error_handling import ProcessError, ValidationError
+from core.error_handling import ProcessError, ValidationError
 
 def my_function():
     try:

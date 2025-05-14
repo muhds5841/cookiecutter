@@ -6,9 +6,9 @@ import base64
 from typing import Dict, Any, Optional, List, Protocol, Union
 from pathlib import Path
 
-from lib.config import load_config
-from lib.logging import get_logger
-from lib.utils import generate_id, create_temp_file
+from core.config import load_config
+from core.logging import get_logger
+from core.utils import generate_id, create_temp_file
 from process.process_base import ProcessBase
 
 
