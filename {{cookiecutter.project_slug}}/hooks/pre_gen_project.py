@@ -15,15 +15,22 @@ if not re.match(r"^[a-z][a-z0-9_]+$", PROJECT_SLUG):
 
 # Sprawdzanie, czy wybrano przynajmniej jeden komponent
 components = [
-    "{{ cookiecutter.components.process }}",
-    "{{ cookiecutter.components.grpc }}",
-    "{{ cookiecutter.components.rest }}",
-    "{{ cookiecutter.components.webrtc }}",
-    "{{ cookiecutter.components.mcp }}",
-    "{{ cookiecutter.components.shell }}",
+    "{{ cookiecutter.use_process }}",
+    "{{ cookiecutter.use_grpc }}",
+    "{{ cookiecutter.use_rest }}",
+    "{{ cookiecutter.use_mqtt }}",
+    "{{ cookiecutter.use_ftp }}",
+    "{{ cookiecutter.use_webrtc }}",
+    "{{ cookiecutter.use_websocket }}",
+    "{{ cookiecutter.use_imap }}",
+    "{{ cookiecutter.use_smtp }}",
+    "{{ cookiecutter.use_pop3 }}",
+    "{{ cookiecutter.use_ssh }}",
+    "{{ cookiecutter.use_mcp }}",
+    "{{ cookiecutter.use_shell }}",
 ]
 
-if all(comp.lower() == "false" for comp in components):
+if all(comp.lower() == "no" for comp in components):
     print("ERROR: Musisz wybrać przynajmniej jeden komponent.")
     sys.exit(1)
 
