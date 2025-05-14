@@ -8,14 +8,15 @@ import time
 from concurrent import futures
 from typing import Any, Dict
 
-import grpc
-
 # Dodaj katalog nadrzędny do ścieżki, aby umożliwić import z process i lib
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+# Importy bibliotek zewnętrznych
+import grpc
+
+# Importy wewnętrzne
 from lib.config import load_config
 from lib.logging import configure_logging, get_logger
-
 from process.process import Process
 
 # Importy wygenerowane z proto (będą dostępne po wygenerowaniu kodu z proto)
@@ -61,16 +62,66 @@ class EmptyRequest:
     pass
 
 
+# Tymczasowa implementacja klas protobuf do czasu wygenerowania ich z pliku .proto
+class TtsRequest:
+    """Klasa reprezentująca żądanie syntezy mowy."""
+    def __init__(self, text="", language="", voice="", format="wav"):
+        self.text = text
+        self.language = language
+        self.voice = voice
+        self.format = format
+
+
+class TtsResponse:
+    """Klasa reprezentująca odpowiedź syntezy mowy."""
+    def __init__(self, audio_id="", format="", base64="", error=""):
+        self.audio_id = audio_id
+        self.format = format
+        self.base64 = base64
+        self.error = error
+
+
+class VoiceInfo:
+    """Klasa reprezentująca informacje o głosie."""
+    def __init__(self, name="", language="", gender=""):
+        self.name = name
+        self.language = language
+        self.gender = gender
+
+
+class VoicesResponse:
+    """Klasa reprezentująca odpowiedź z listą dostępnych głosów."""
+    def __init__(self, voices=None):
+        self.voices = voices or []
+
+
 # Tymczasowa implementacja serwisu gRPC do czasu wygenerowania kodu z proto
 class ProcessServiceServicer:
-    """Implementacja serwisu TTS dla gRPC."""
+    """Implementacja serwisu TTS dla gRPC.
+    
+    Klasa implementuje metody serwisu gRPC dla systemu TTS, umożliwiając
+    konwersję tekstu na mowę oraz pobieranie informacji o dostępnych głosach i językach.
+    """
 
     def __init__(self, process: Process):
+        """Inicjalizuje serwis gRPC.
+        
+        Args:
+            process: Instancja silnika Process do przetwarzania żądań.
+        """
         self.process = process
         self.logger = get_logger("grpc.server")
 
-    def Synthesize(self, request, context):
-        """Konwertuje tekst na mowę."""
+    def synthesize(self, request, context):
+        """Konwertuje tekst na mowę.
+        
+        Args:
+            request: Żądanie zawierające tekst do konwersji i parametry.
+            context: Kontekst gRPC.
+            
+        Returns:
+            Odpowiedź zawierająca dane audio.
+        """
         self.logger.info(f"Otrzymano żądanie syntezy: {request.text[:50]}...")
 
         try:
@@ -86,14 +137,32 @@ class ProcessServiceServicer:
             return TtsResponse(
                 audio_id=result["audio_id"], format=result["format"], base64=result["base64"]
             )
+        except ValueError as e:
+            self.logger.error(f"Błąd walidacji parametrów: {str(e)}")
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(str(e))
+            return TtsResponse(error=str(e))
+        except KeyError as e:
+            self.logger.error(f"Błąd brakującego klucza: {str(e)}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Brakujący klucz w wynikach: {str(e)}")
+            return TtsResponse(error=f"Błąd wewnętrzny: {str(e)}")
         except Exception as e:
             self.logger.error(f"Błąd podczas syntezy: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
-            return TtsResponse()
+            return TtsResponse(error=f"Błąd wewnętrzny: {str(e)}")
 
-    def GetVoices(self, request, context):
-        """Pobiera listę dostępnych głosów."""
+    def get_voices(self, request, context):
+        """Pobiera listę dostępnych głosów.
+        
+        Args:
+            request: Puste żądanie.
+            context: Kontekst gRPC.
+            
+        Returns:
+            Odpowiedź zawierająca listę dostępnych głosów.
+        """
         self.logger.info("Otrzymano żądanie pobrania głosów")
 
         try:
@@ -108,19 +177,42 @@ class ProcessServiceServicer:
                 )
 
             return VoicesResponse(voices=voice_infos)
+        except AttributeError as e:
+            self.logger.error(f"Błąd atrybutu: {str(e)}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Błąd atrybutu: {str(e)}")
+            return VoicesResponse()
         except Exception as e:
             self.logger.error(f"Błąd podczas pobierania głosów: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
             return VoicesResponse()
 
-    def GetLanguages(self, request, context):
-        """Pobiera listę dostępnych języków."""
+    def get_languages(self, request, context):
+        """Pobiera listę dostępnych języków.
+        
+        Args:
+            request: Puste żądanie.
+            context: Kontekst gRPC.
+            
+        Returns:
+            Odpowiedź zawierająca listę dostępnych języków.
+        """
         self.logger.info("Otrzymano żądanie pobrania języków")
 
         try:
             languages = self.process.get_available_languages()
             return LanguagesResponse(languages=languages)
+        except AttributeError as e:
+            self.logger.error(f"Błąd atrybutu: {str(e)}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Błąd atrybutu: {str(e)}")
+            return LanguagesResponse()
+        except ValueError as e:
+            self.logger.error(f"Błąd walidacji: {str(e)}")
+            context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+            context.set_details(str(e))
+            return LanguagesResponse()
         except Exception as e:
             self.logger.error(f"Błąd podczas pobierania języków: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
