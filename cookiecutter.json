@@ -1,0 +1,35 @@
+{
+  "project_name": "TTS Project",
+  "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+  "project_description": "A modular text-to-speech system with MCP integration",
+  "author_name": "Your Name",
+  "author_email": "your.email@example.com",
+  "python_version": ["3.11", "3.10", "3.9"],
+  "use_docker": ["yes", "no"],
+  "components": {
+    "tts_engine": true,
+    "grpc": true,
+    "rest": true,
+    "webrtc": true,
+    "mcp": true,
+    "shell": true
+  },
+  "mcp_configuration": {
+    "transports": {
+      "sse": true,
+      "stdio": true,
+      "grpc": false
+    },
+    "include_discovery": true,
+    "include_tool_registry": true,
+    "include_adaptive_sampling": true
+  },
+  "init_git": ["yes", "no"],
+  "use_pre_commit": ["yes", "no"],
+  "install_dependencies": ["yes", "no"],
+  "_copy_without_render": [
+    "*.html",
+    "*.js",
+    "*.svg"
+  ]
+}
