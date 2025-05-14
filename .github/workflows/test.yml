@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.9, 3.11]
+        python-version: [3.9, 3.12]
 
     steps:
     - uses: actions/checkout@v3
@@ -32,6 +32,5 @@ jobs:
         # Use the first python version from the list in cookiecutter.json as default
         cookiecutter --no-input . project_name="Test Project"
         cd test_project
-        pip install poetry
-        poetry install
-        poetry run pytest
+        pip install -r requirements.txt
+        pytest

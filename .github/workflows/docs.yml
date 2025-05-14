@@ -1,3 +1,4 @@
+
 name: Build and Deploy Documentation
 
 on:
@@ -17,19 +18,18 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'
+        python-version: '3.12'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install poetry
-        poetry install
-        poetry add sphinx sphinx-rtd-theme
+        pip install -r requirements.txt
+        pip install sphinx sphinx-rtd-theme
 
     - name: Generate Documentation
       run: |
         cd docs
-        poetry run sphinx-build -b html source build
+        sphinx-build -b html source build
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
