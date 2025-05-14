@@ -1,0 +1,109 @@
+version: '3.8'
+
+services:
+  # Główny proces TTS
+  process:
+    build:
+      context: ./process
+      dockerfile: Dockerfile
+    volumes:
+      - ./process:/app
+    env_file:
+      - ./process/.env.example
+    networks:
+      - tts-network
+    restart: unless-stopped
+
+  # Serwis gRPC
+  grpc:
+    build:
+      context: ./grpc
+      dockerfile: Dockerfile
+    volumes:
+      - ./grpc:/app
+    env_file:
+      - ./grpc/.env.example
+    ports:
+      - "50051:50051"
+    depends_on:
+      - process
+    networks:
+      - tts-network
+    restart: unless-stopped
+    environment:
+      - GRPC_PORT=50051
+      - GRPC_LOG_LEVEL=info
+
+  # Serwis REST
+  rest:
+    build:
+      context: ./rest
+      dockerfile: Dockerfile
+    volumes:
+      - ./rest:/app
+    env_file:
+      - ./rest/.env.example
+    ports:
+      - "5000:5000"
+    depends_on:
+      - process
+    networks:
+      - tts-network
+    restart: unless-stopped
+    environment:
+      - REST_HOST=0.0.0.0
+      - REST_PORT=5000
+      - REST_LOG_LEVEL=info
+
+  # Serwis WebRTC
+  webrtc:
+    build:
+      context: ./webrtc
+      dockerfile: Dockerfile
+    volumes:
+      - ./webrtc:/app
+    env_file:
+      - ./webrtc/.env.example
+    ports:
+      - "8080:8080"
+    depends_on:
+      - process
+    networks:
+      - tts-network
+    restart: unless-stopped
+    environment:
+      - WEBRTC_HOST=0.0.0.0
+      - WEBRTC_PORT=8080
+      - WEBRTC_LOG_LEVEL=info
+
+  # Serwis MCP
+  mcp:
+    build:
+      context: ./mcp
+      dockerfile: Dockerfile
+    volumes:
+      - ./mcp:/app
+    env_file:
+      - ./mcp/.env.example
+    ports:
+      - "4000:4000"
+    depends_on:
+      - process
+    networks:
+      - tts-network
+    restart: unless-stopped
+    environment:
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=4000
+      - MCP_LOG_LEVEL=info
+      - MCP_TRANSPORTS_SSE=true
+      - MCP_TRANSPORTS_STDIO=true
+      - MCP_TRANSPORTS_GRPC=false
+
+networks:
+  tts-network:
+    driver: bridge
+
+volumes:
+  process-data:
+    driver: local
