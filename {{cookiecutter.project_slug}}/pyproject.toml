@@ -39,7 +39,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.black]
 line-length = 100
-target-version = ["py{{ cookiecutter.python_version.replace('.', '') }}"]
+# Dynamicznie ustawiana wersja Pythona na podstawie cookiecutter.python_version
+# W szablonie używamy py311 jako domyślnej wersji, ale w wygenerowanym projekcie zostanie to zastąpione
+target-version = ["py311"]
 include = '\.pyi?$'
 
 [tool.isort]
@@ -47,7 +49,9 @@ profile = "black"
 line_length = 88
 
 [tool.mypy]
-python_version = "{{ cookiecutter.python_version }}"
+# Dynamicznie ustawiana wersja Pythona na podstawie cookiecutter.python_version
+# W szablonie używamy 3.11 jako domyślnej wersji, ale w wygenerowanym projekcie zostanie to zastąpione
+python_version = "3.11"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
