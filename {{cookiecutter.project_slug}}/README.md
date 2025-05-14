@@ -192,6 +192,155 @@ result = client.process_text("Text to process", language="en-US")
 
 ## Development
 
+### Installing Poetry
+
+This project uses Poetry for dependency management. To install Poetry:
+
+#### On Linux/macOS:
+
+```bash
+# Method 1: Using the official installer
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Method 2: Using pip
+pip install poetry
+
+# Method 3: On Ubuntu/Debian
+sudo apt install python3-poetry
+```
+
+#### On Windows (PowerShell):
+
+```powershell
+# Method 1: Using the official installer
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+
+# Method 2: Using pip
+pip install poetry
+```
+
+After installation, verify Poetry is installed correctly:
+
+```bash
+poetry --version
+```
+
+#### Alternative: Using virtualenv and pip
+
+If you prefer not to install Poetry, you can use traditional virtualenv and pip:
+
+```bash
+# Create a virtual environment
+python -m venv venv
+
+# Activate the virtual environment
+# On Linux/macOS:
+source venv/bin/activate
+# On Windows:
+# venv\Scripts\activate
+
+# Install dependencies from requirements.txt
+pip install -r requirements.txt
+```
+
+### Creating New Modules
+
+The Process system is designed to be modular. Here's how to create and set up new modules:
+
+#### 1. Create a new protocol module (e.g., for a new protocol like GraphQL):
+
+```bash
+# Create the directory structure
+mkdir -p graphql
+cd graphql
+
+# Initialize Poetry for the module
+poetry init
+
+# Add dependencies
+poetry add fastapi uvicorn graphql-core
+
+# Add development dependencies
+poetry add --group dev pytest black isort mypy
+
+# Create basic files
+touch server.py client.py .env.example
+```
+
+#### 2. Create a new plugin for the Process engine:
+
+```bash
+# Navigate to the process directory
+cd process
+
+# Create a plugin directory if it doesn't exist
+mkdir -p plugins
+
+# Create a new plugin file
+touch plugins/my_plugin.py
+```
+
+Example plugin implementation in `plugins/my_plugin.py`:
+
+```python
+from process.process_base import ProcessBase
+from process.plugin_system import register_plugin
+
+class MyPlugin(ProcessBase):
+    """Custom processing plugin."""
+    
+    def process_text(self, text, **options):
+        """Process text with custom logic."""
+        # Implement your processing logic here
+        processed_text = text.upper()  # Example: convert to uppercase
+        
+        # Create and return a result
+        return self.create_result(
+            data=processed_text,
+            format="text",
+            metadata={"plugin": "my_plugin"}
+        )
+
+# Register the plugin
+register_plugin("my_plugin", MyPlugin)
+```
+
+#### 3. Create a new service module with monitoring:
+
+```bash
+# Create the directory structure
+mkdir -p my_service
+cd my_service
+
+# Initialize Poetry for the module
+poetry init
+
+# Add dependencies
+poetry add prometheus-client healthcheck
+
+# Create basic files
+touch server.py client.py .env.example
+```
+
+Example `.env.example` for the new service:
+
+```
+# My Service Environment Variables
+MY_SERVICE_HOST=0.0.0.0
+MY_SERVICE_PORT=8080
+MY_SERVICE_LOG_LEVEL=INFO
+MY_SERVICE_PROCESS_HOST=process
+MY_SERVICE_PROCESS_PORT=8000
+
+# Monitoring settings
+MY_SERVICE_ENABLE_METRICS=true
+MY_SERVICE_METRICS_PORT=9101
+MY_SERVICE_HEALTH_CHECK_INTERVAL=30
+
+# Core settings
+CORE_LOG_LEVEL=INFO
+```
+
 ### Adding New Plugins
 
 The Process system can be extended with plugins. To create a new plugin:
@@ -211,6 +360,64 @@ You can add new service interfaces (e.g., WebSocket) by following the pattern of
 3. Implement a client for easy integration
 
 See the [Modular Architecture](docs/modular_architecture.md) documentation for details.
+
+## Testing Modules
+
+Each module in the Process system can be tested independently. Here's how to test different components:
+
+### Testing the Process Engine
+
+```bash
+# Navigate to the process directory
+cd process
+
+# Run tests with Poetry
+poetry run pytest
+
+# Or with traditional pytest if not using Poetry
+python -m pytest
+```
+
+### Testing Protocol Implementations
+
+```bash
+# Example: Testing the gRPC service
+cd grpc
+poetry run pytest
+
+# Example: Testing the REST API
+cd rest
+poetry run pytest
+```
+
+### Testing Health Checks and Monitoring
+
+Each service exposes health check and metrics endpoints that can be tested:
+
+```bash
+# Start the service
+cd imap
+poetry run python server.py
+
+# In another terminal, test the health endpoint
+curl http://localhost:8080/health
+
+# Test the metrics endpoint
+curl http://localhost:9101/metrics
+```
+
+### End-to-End Testing
+
+Test the entire system with all services running:
+
+```bash
+# Start all services with Docker Compose
+docker-compose up -d
+
+# Run end-to-end tests
+cd tests/e2e_tests
+python -m pytest
+```
 
 ## Documentation
 
