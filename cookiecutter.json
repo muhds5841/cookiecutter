@@ -35,6 +35,7 @@
   "_copy_without_render": [
     "*.html",
     "*.js",
-    "*.svg"
+    "*.svg",
+    "scripts/quality.sh"
   ]
 }

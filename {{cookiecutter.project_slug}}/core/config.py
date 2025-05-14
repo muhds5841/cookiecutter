@@ -54,7 +54,7 @@ class Config:
                 continue
 
             # Remove prefix if it exists
-            config_key = key[len(prefix) :] if prefix and key.startswith(prefix) else key
+            config_key = key[len(prefix):] if prefix and key.startswith(prefix) else key
 
             # Try to parse as JSON if it looks like a JSON value
             if (
