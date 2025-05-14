@@ -30,7 +30,7 @@ class URITemplate:
         pattern = self.pattern
         # Zamiana parametrów na grupy przechwytujące w wyrażeniu regularnym
         for param_name, param_regex in self.params.items():
-            placeholder = f"{{{param_name}}}"
+            placeholder = f"{{{{{param_name}}}}}"
             if placeholder in pattern:
                 pattern = pattern.replace(
                     placeholder,
