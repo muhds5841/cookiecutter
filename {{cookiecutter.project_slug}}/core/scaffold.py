@@ -21,7 +21,7 @@ def generate_adapter(name, process):
     """Adapter dla silnika Process {process}."""
 
     from typing import Dict, Any, Optional
-    from ..process import ProcessProcess
+    from ..process import ProcessEngine
 
 
     class {class_name}(ProcessEngine):
@@ -89,7 +89,7 @@ def generate_adapter(name, process):
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(content)
 
-    print(f"Wygenerowano adapter {name} dla silnika {engine} w pliku {file_path}")
+    print(f"Wygenerowano adapter {name} dla silnika {process} w pliku {file_path}")
 
     # Aktualizacja pliku __init__.py, aby zarejestrować nowy adapter
     init_path = Path("process/adapters/__init__.py")

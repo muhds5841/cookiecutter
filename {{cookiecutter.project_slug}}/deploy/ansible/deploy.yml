@@ -1,27 +1,27 @@
 ---
-- name: Deploy Process Project
-  hosts: tts_servers
+- name: Deploy {{cookiecutter.project_name}} Project
+  hosts: {{cookiecutter.project_slug}}_servers
   become: yes
 
   vars:
-    project_dir: /opt/tts-project
+    deploy_dir: /opt/{{cookiecutter.project_slug}}
 
   tasks:
     - name: Update repository
       git:
-        repo: git@github.com:username/tts-project.git
-        dest: "{{ project_dir }}"
+        repo: git@github.com:username/{{cookiecutter.project_slug}}.git
+        dest: "{% raw %}{{ deploy_dir }}{% endraw %}"
         update: yes
 
     - name: Build Docker images
       command: docker-compose -f docker-compose.prod.yml build
       args:
-        chdir: "{{ project_dir }}"
+        chdir: "{% raw %}{{ deploy_dir }}{% endraw %}"
 
     - name: Start containers
       command: docker-compose -f docker-compose.prod.yml up -d
       args:
-        chdir: "{{ project_dir }}"
+        chdir: "{% raw %}{{ deploy_dir }}{% endraw %}"
 
     - name: Clean up unused Docker images
       command: docker system prune -af
