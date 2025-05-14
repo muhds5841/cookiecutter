@@ -12,41 +12,60 @@ python = "^{{ cookiecutter.python_version }}"
 pyaml = "^23.5.9"               # Obsługa YAML
 loguru = "^0.7.2"               # Zaawansowane logowanie
 prometheus-client = "^0.17.1"   # Prometheus metryki
+pydantic = "^2.4.2"             # Walidacja danych
+typing-extensions = "^4.8.0"    # Rozszerzenia dla typowania
+
+{% if cookiecutter.use_process == 'yes' %}
+# Process
+psutil = "^5.9.5"               # Zarządzanie procesami
+{% endif %}
 
 {% if cookiecutter.use_mqtt == 'yes' %}
 # MQTT
-paho-mqtt = "^2.2.1"            # MQTT
+paho-mqtt = "^2.2.1"            # MQTT klient
 {% endif %}
 
-{% if cookiecutter.use_websocket == 'yes' or cookiecutter.use_webrtc == 'yes' %}
+{% if cookiecutter.use_websocket == 'yes' %}
 # WebSocket
-websockets = "^11.0.3"          # WebSocket
+websockets = "^11.0.3"          # WebSocket klient/serwer
+{% endif %}
+
+{% if cookiecutter.use_webrtc == 'yes' %}
+# WebRTC
+websockets = "^11.0.3"          # WebSocket dla sygnalizacji
+aiortc = "^1.5.0"               # WebRTC implementacja
+pyee = "^11.0.0"                # Event emitter
 {% endif %}
 
 {% if cookiecutter.use_rest == 'yes' %}
 # REST API
-fastapi = "^0.104.0"            # REST API
+fastapi = "^0.104.0"            # REST API framework
 uvicorn = "^0.23.2"             # ASGI serwer
+httpx = "^0.25.0"               # HTTP klient
 {% endif %}
 
 {% if cookiecutter.use_ftp == 'yes' %}
 # FTP
 pyftpdlib = "^1.5.9"            # FTP serwer
+ftplib = "^0.0.1"               # FTP klient
 {% endif %}
 
 {% if cookiecutter.use_ssh == 'yes' %}
 # SSH
 paramiko = "^3.3.1"             # SSH klient/serwer
+scp = "^0.14.5"                 # SCP dla Paramiko
 {% endif %}
 
 {% if cookiecutter.use_imap == 'yes' %}
 # IMAP
 imaplib2 = "^3.6"               # IMAP klient
+email-validator = "^2.0.0"      # Walidacja adresów email
 {% endif %}
 
 {% if cookiecutter.use_smtp == 'yes' %}
 # SMTP
 aiosmtplib = "^2.0.2"           # SMTP klient (async)
+email-validator = "^2.0.0"      # Walidacja adresów email
 {% endif %}
 
 {% if cookiecutter.use_pop3 == 'yes' %}
@@ -59,6 +78,25 @@ poplib3 = "^1.0.0"              # POP3 klient
 grpcio = "^1.59.0"              # gRPC
 grpcio-tools = "^1.59.0"        # gRPC narzędzia
 protobuf = "^4.24.4"            # Protocol Buffers
+{% endif %}
+
+{% if cookiecutter.use_mcp == 'yes' %}
+# MCP (Machine Communication Protocol)
+grpcio = "^1.59.0"              # gRPC dla MCP
+protobuf = "^4.24.4"            # Protocol Buffers dla MCP
+websockets = "^11.0.3"          # WebSocket dla MCP
+{% endif %}
+
+{% if cookiecutter.use_shell == 'yes' %}
+# Shell
+psutil = "^5.9.5"               # Zarządzanie procesami
+click = "^8.1.7"                # CLI narzędzia
+prompt-toolkit = "^3.0.39"      # Interaktywne CLI
+{% endif %}
+
+{% if cookiecutter.use_docker == 'yes' %}
+# Docker
+docker = "^6.1.3"               # Docker API
 {% endif %}
 
 [tool.poetry.group.dev.dependencies]

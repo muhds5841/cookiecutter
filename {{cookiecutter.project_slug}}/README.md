@@ -1,101 +1,281 @@
-# Process System
+# {{ cookiecutter.project_name }}
 
-A modular and extensible processing system with multiple service interfaces including gRPC, REST API, and Model Context Protocol (MCP) integration.
+{{ cookiecutter.project_description }}
 
-## Table of Contents
+## Spis treści
 
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Project Structure](#project-structure)
-- [Key Features](#key-features)
-- [Getting Started](#getting-started)
-  - [Quick Start](#quick-start)
-  - [Manual Setup](#manual-setup)
-  - [Environment Configuration](#environment-configuration)
-- [Usage Examples](#usage-examples)
-- [Development](#development)
-  - [Adding New Plugins](#adding-new-plugins)
-  - [Creating New Service Interfaces](#creating-new-service-interfaces)
-- [Documentation](#documentation)
-- [Contributing](#contributing)
-- [License](#license)
+- [Przegląd](#przegląd)
+- [Architektura](#architektura)
+- [Struktura projektu](#struktura-projektu)
+- [Główne funkcje](#główne-funkcje)
+- [Rozpoczęcie pracy](#rozpoczęcie-pracy)
+  - [Szybki start](#szybki-start)
+  - [Konfiguracja ręczna](#konfiguracja-ręczna)
+  - [Konfiguracja środowiska](#konfiguracja-środowiska)
+- [Przykłady użycia](#przykłady-użycia)
+- [Rozwój](#rozwój)
+- [Dokumentacja](#dokumentacja)
+- [Licencja](#licencja)
 
-## Overview
+## Przegląd
 
-The Process system provides a flexible framework for text processing with a plugin architecture that allows for easy extension. It includes multiple service interfaces for integration with various systems and a comprehensive configuration and error handling system.
+{{ cookiecutter.project_name }} to modułowy system zaprojektowany do elastycznej integracji z różnymi protokołami komunikacyjnymi i usługami. Projekt został wygenerowany przy użyciu szablonu cookiecutter i zawiera tylko wybrane przez Ciebie moduły.
 
-## Architecture
+## Architektura
 
-The system is built with a modular architecture that separates concerns and allows components to be deployed independently:
+System jest zbudowany z modułową architekturą, która oddziela poszczególne komponenty i pozwala na ich niezależne wdrażanie:
 
-- **Core Process Engine**: The central component responsible for text processing
-- **Service Interfaces**: Multiple interfaces (gRPC, REST, MCP) for accessing the Process functionality
-- **Plugin System**: Extensible architecture for adding new processing capabilities
-- **Core Framework**: Common utilities for configuration, logging, and error handling
+- **Core Framework**: Wspólne narzędzia do konfiguracji, logowania i obsługi błędów
+{% if cookiecutter.use_process == 'yes' %}
+- **Process Engine**: Centralny komponent odpowiedzialny za przetwarzanie
+{% endif %}
+{% if cookiecutter.use_grpc == 'yes' %}
+- **gRPC Interface**: Interfejs gRPC do komunikacji między usługami
+{% endif %}
+{% if cookiecutter.use_rest == 'yes' %}
+- **REST API**: Interfejs REST API dla integracji webowej
+{% endif %}
+{% if cookiecutter.use_mcp == 'yes' %}
+- **MCP (Machine Communication Protocol)**: Protokół do komunikacji między maszynami
+{% endif %}
+{% if cookiecutter.use_mqtt == 'yes' %}
+- **MQTT Client/Server**: Implementacja protokołu MQTT dla IoT
+{% endif %}
+{% if cookiecutter.use_websocket == 'yes' %}
+- **WebSocket**: Komunikacja w czasie rzeczywistym przez WebSocket
+{% endif %}
+{% if cookiecutter.use_webrtc == 'yes' %}
+- **WebRTC**: Peer-to-peer komunikacja audio/wideo/danych
+{% endif %}
+{% if cookiecutter.use_ftp == 'yes' %}
+- **FTP Client/Server**: Obsługa protokołu FTP
+{% endif %}
+{% if cookiecutter.use_ssh == 'yes' %}
+- **SSH Client/Server**: Bezpieczna komunikacja przez SSH
+{% endif %}
+{% if cookiecutter.use_imap == 'yes' or cookiecutter.use_smtp == 'yes' or cookiecutter.use_pop3 == 'yes' %}
+- **Email Protocols**: Obsługa protokołów email ({% if cookiecutter.use_imap == 'yes' %}IMAP{% endif %}{% if cookiecutter.use_smtp == 'yes' %}{% if cookiecutter.use_imap == 'yes' %}, {% endif %}SMTP{% endif %}{% if cookiecutter.use_pop3 == 'yes' %}{% if cookiecutter.use_imap == 'yes' or cookiecutter.use_smtp == 'yes' %}, {% endif %}POP3{% endif %})
+{% endif %}
+{% if cookiecutter.use_shell == 'yes' %}
+- **Shell Interface**: Interaktywna powłoka do zarządzania systemem
+{% endif %}
 
-## Project Structure
+## Struktura projektu
 
 ```
-project/
-├── process/                  # Core Process Engine
-│   ├── Dockerfile
-│   ├── pyproject.toml
+{{ cookiecutter.project_slug }}/
+├── core/                    # Podstawowy framework
 │   ├── __init__.py
-│   ├── process.py            # Main Process implementation
-│   ├── process_base.py       # Abstract base class
-│   ├── plugin_system.py      # Plugin architecture
-│   └── adapters/             # Adapters for different implementations
-├── grpc/                    # gRPC Service
-│   ├── Dockerfile
-│   ├── pyproject.toml
-│   ├── server.py             # gRPC server implementation
-│   ├── client.py             # gRPC client
-│   └── proto/                # Protocol buffer definitions
-├── rest/                    # REST API Service
-│   ├── Dockerfile
-│   ├── pyproject.toml
-│   ├── server.py             # REST server implementation
-│   └── client.py             # REST client
-├── mcp/                     # Model Context Protocol
-│   ├── Dockerfile
-│   ├── pyproject.toml
-│   ├── mcp_server.py         # MCP server
-│   ├── transports/           # Transport implementations
-│   ├── protocol/             # Protocol handling
-│   ├── tools/                # MCP tools
-│   └── resources/            # MCP resources
-├── core/                    # Core framework
+│   ├── config.py            # Podstawowa konfiguracja
+│   ├── logging.py           # Narzędzia do logowania
+│   ├── monitoring.py        # Monitorowanie i metryki
+│   └── utils.py             # Wspólne narzędzia
+{% if cookiecutter.use_process == 'yes' %}
+├── process/                 # Silnik procesów
 │   ├── __init__.py
-│   ├── config.py             # Basic configuration
-│   ├── config_manager.py     # Enhanced configuration management
-│   ├── logging.py            # Logging utilities
-│   ├── utils.py              # Common utilities
-│   └── error_handling.py     # Standardized error handling
-├── tests/                   # Tests
-│   ├── process_tests/        # Process engine tests
-│   ├── grpc_tests/           # gRPC service tests
-│   ├── rest_tests/           # REST API tests
-│   ├── mcp_tests/            # MCP tests
-│   └── e2e_tests/            # End-to-end tests
-├── docker-compose.yml        # Docker Compose configuration
-├── dev_setup.py             # Development environment setup
-└── README.md                # This file
+│   ├── process.py           # Główna implementacja
+│   ├── plugin_system.py     # System wtyczek
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_grpc == 'yes' %}
+├── grpc/                    # Usługa gRPC
+│   ├── __init__.py
+│   ├── server.py            # Implementacja serwera gRPC
+│   ├── client.py            # Klient gRPC
+│   ├── proto/               # Definicje Protocol Buffer
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_rest == 'yes' %}
+├── rest/                    # Usługa REST API
+│   ├── __init__.py
+│   ├── server.py            # Implementacja serwera REST
+│   ├── client.py            # Klient REST
+│   ├── routes/              # Definicje tras API
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_mcp == 'yes' %}
+├── mcp/                     # Machine Communication Protocol
+│   ├── __init__.py
+│   ├── server.py            # Serwer MCP
+│   ├── client.py            # Klient MCP
+│   ├── protocol/            # Obsługa protokołu
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_mqtt == 'yes' %}
+├── mqtt/                    # MQTT
+│   ├── __init__.py
+│   ├── client.py            # Klient MQTT
+│   ├── handler.py           # Obsługa wiadomości
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_websocket == 'yes' %}
+├── websocket/               # WebSocket
+│   ├── __init__.py
+│   ├── server.py            # Serwer WebSocket
+│   ├── client.py            # Klient WebSocket
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_webrtc == 'yes' %}
+├── webrtc/                  # WebRTC
+│   ├── __init__.py
+│   ├── signaling.py         # Serwer sygnalizacyjny
+│   ├── client.py            # Klient WebRTC
+│   ├── session.py           # Zarządzanie sesjami
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_ftp == 'yes' %}
+├── ftp/                     # FTP
+│   ├── __init__.py
+│   ├── server.py            # Serwer FTP
+│   ├── client.py            # Klient FTP
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_ssh == 'yes' %}
+├── ssh/                     # SSH
+│   ├── __init__.py
+│   ├── server.py            # Serwer SSH
+│   ├── client.py            # Klient SSH
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_imap == 'yes' %}
+├── imap/                    # IMAP
+│   ├── __init__.py
+│   ├── client.py            # Klient IMAP
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_smtp == 'yes' %}
+├── smtp/                    # SMTP
+│   ├── __init__.py
+│   ├── client.py            # Klient SMTP
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_pop3 == 'yes' %}
+├── pop3/                    # POP3
+│   ├── __init__.py
+│   ├── client.py            # Klient POP3
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+{% if cookiecutter.use_shell == 'yes' %}
+├── shell/                   # Interfejs powłoki
+│   ├── __init__.py
+│   ├── client.py            # Klient powłoki
+│   ├── interactive.py       # Interaktywna powłoka
+│   ├── main.py              # Punkt wejścia
+│   └── tests/               # Testy jednostkowe
+{% endif %}
+├── quality/                 # Narzędzia jakości kodu
+│   ├── __init__.py
+│   └── hooks.py             # Hooki pre-commit
+├── scripts/                 # Skrypty pomocnicze
+│   └── quality.sh           # Skrypt do sprawdzania jakości kodu
+{% if cookiecutter.use_docker == 'yes' %}
+├── docker/                  # Konfiguracja Docker
+│   ├── Dockerfile           # Główny Dockerfile
+│   └── docker-entrypoint.sh # Skrypt wejściowy dla kontenera
+├── docker-compose.yml       # Konfiguracja Docker Compose (dev)
+├── docker-compose.prod.yml  # Konfiguracja Docker Compose (prod)
+{% endif %}
+├── pyproject.toml          # Konfiguracja Poetry i narzędzi
+├── .pre-commit-config.yaml  # Konfiguracja pre-commit
+└── README.md               # Ten plik
 ```
 
-## Key Features
+## Główne funkcje
 
-- **Modular Architecture**: Each component can be deployed and scaled independently
-- **Multiple Interfaces**: gRPC, REST API, and MCP for integration with various systems
-- **Plugin System**: Easily extend functionality with plugins
-- **Unified Configuration**: Centralized configuration management with environment overlays
-- **Standardized Error Handling**: Consistent error reporting across all components
-- **Comprehensive Logging**: Structured logging throughout the system
-- **Docker Support**: Containerized deployment with Docker Compose
-- **Development Tools**: Simplified development environment setup
+- **Modułowa architektura**: Każdy komponent może być wdrażany i skalowany niezależnie
+{% if cookiecutter.use_grpc == 'yes' or cookiecutter.use_rest == 'yes' or cookiecutter.use_mcp == 'yes' %}
+- **Wiele interfejsów**: {% if cookiecutter.use_grpc == 'yes' %}gRPC{% endif %}{% if cookiecutter.use_rest == 'yes' %}{% if cookiecutter.use_grpc == 'yes' %}, {% endif %}REST API{% endif %}{% if cookiecutter.use_mcp == 'yes' %}{% if cookiecutter.use_grpc == 'yes' or cookiecutter.use_rest == 'yes' %}, {% endif %}MCP{% endif %} do integracji z różnymi systemami
+{% endif %}
+{% if cookiecutter.use_process == 'yes' %}
+- **System wtyczek**: Łatwe rozszerzanie funkcjonalności za pomocą wtyczek
+{% endif %}
+- **Ujednolicona konfiguracja**: Scentralizowane zarządzanie konfiguracją
+- **Standardowa obsługa błędów**: Spójna obsługa błędów we wszystkich komponentach
+- **Kompleksowe logowanie**: Strukturalne logowanie w całym systemie
+{% if cookiecutter.use_docker == 'yes' %}
+- **Wsparcie dla Docker**: Konteneryzowane wdrażanie z Docker Compose
+{% endif %}
+- **Narzędzia deweloperskie**: Uproszczona konfiguracja środowiska deweloperskiego
 
-## Getting Started
+## Rozpoczęcie pracy
 
-### Quick Start
+### Szybki start
+
+Najłatwiejszym sposobem na rozpoczęcie pracy jest użycie Poetry do instalacji zależności i uruchomienia projektu:
+
+```bash
+# Instalacja zależności
+poetry install
+
+# Aktywacja środowiska wirtualnego
+poetry shell
+
+# Sprawdzenie jakości kodu
+./scripts/quality.sh
+```
+
+### Konfiguracja ręczna
+
+Jeśli wolisz ręczną konfigurację, możesz wykonać następujące kroki:
+
+```bash
+# Utworzenie wirtualnego środowiska
+python -m venv venv
+
+# Aktywacja środowiska (Linux/Mac)
+source venv/bin/activate
+
+# Aktywacja środowiska (Windows)
+# venv\Scripts\activate
+
+# Instalacja zależności
+pip install -e .
+```
+
+### Konfiguracja środowiska
+
+Projekt używa zmiennych środowiskowych do konfiguracji. Możesz utworzyć plik `.env` w katalogu głównym projektu z następującymi zmiennymi:
+
+```
+# Podstawowa konfiguracja
+LOG_LEVEL=INFO
+ENVIRONMENT=development
+
+{% if cookiecutter.use_process == 'yes' %}
+# Konfiguracja Process
+PROCESS_TIMEOUT=30
+{% endif %}
+
+{% if cookiecutter.use_grpc == 'yes' %}
+# Konfiguracja gRPC
+GRPC_HOST=0.0.0.0
+GRPC_PORT=50051
+{% endif %}
+
+{% if cookiecutter.use_rest == 'yes' %}
+# Konfiguracja REST API
+REST_HOST=0.0.0.0
+REST_PORT=8000
+{% endif %}
+
+{% if cookiecutter.use_mqtt == 'yes' %}
+# Konfiguracja MQTT
+MQTT_BROKER=localhost
+MQTT_PORT=1883
+{% endif %}
+
+{% if cookiecutter.use_websocket == 'yes' %}
+# Konfiguracja WebSocket
+WEBSOCKET_HOST=0.0.0.0
+WEBSOCKET_PORT=8765
+{% endif %}
+
+{% if cookiecutter.use_webrtc == 'yes' %}
+# Konfiguracja WebRTC
+SIGNALING_HOST=0.0.0.0
+SIGNALING_PORT=8080
+{% endif %}
+```
 
 The easiest way to get started is to use the development setup script:
 
