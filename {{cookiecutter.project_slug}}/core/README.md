@@ -1,3 +1,190 @@
+# Core Framework
+
+This directory contains core framework components and utilities used across all parts of the Process system.
+
+## Overview
+
+The core framework provides a foundation for consistent behavior across all components, including:
+
+- Configuration management
+- Logging
+- Error handling
+- Common utilities
+
+## Components
+
+### Configuration Management
+
+The configuration system provides a unified way to manage configuration across all components:
+
+#### Basic Configuration (`config.py`)
+
+Simple configuration loading from environment variables and files.
+
+```python
+from core.config import load_config
+
+# Load configuration
+config = load_config()
+
+# Access configuration values
+value = config.get("KEY", "default_value")
+```
+
+#### Enhanced Configuration (`config_manager.py`)
+
+Advanced configuration management with environment-specific overlays and validation.
+
+```python
+from core.config_manager import create_config_manager
+
+# Create a configuration manager for a component
+config = create_config_manager("process")
+
+# Access configuration values
+value = config.get("KEY", "default_value")
+
+# Set configuration values
+config.set("KEY", "value")
+
+# Validate configuration against a schema
+errors = config.validate(schema)
+
+# Get the entire configuration as a dictionary
+config_dict = config.as_dict()
+```
+
+### Logging (`logging.py`)
+
+Structured logging with consistent formatting across all components.
+
+```python
+from core.logging import get_logger
+
+# Get a logger for a component
+logger = get_logger("component_name")
+
+# Log messages at different levels
+logger.debug("Debug message")
+logger.info("Info message")
+logger.warning("Warning message")
+logger.error("Error message")
+logger.critical("Critical message")
+
+# Log with context
+logger.info("Message with context", extra={"key": "value"})
+```
+
+### Error Handling (`error_handling.py`)
+
+Standardized error handling with consistent error codes and reporting.
+
+```python
+from core.error_handling import ProcessError, ValidationError, ErrorCode, create_error_handler
+
+# Create an error handler for a component
+error_handler = create_error_handler("component_name")
+
+# Handle an exception
+try:
+    # Some code that might fail
+    pass
+except Exception as e:
+    # Convert to a standardized error
+    process_error = error_handler.handle_error(e)
+    
+    # Create a standardized error response
+    response = error_handler.create_error_response(e)
+
+# Create specific error types
+validation_error = ValidationError("Invalid input", details={"field": "text"})
+```
+
+#### Error Codes
+
+The system defines standard error codes for consistent error reporting:
+
+- **General errors (1-99)**
+  - `UNKNOWN_ERROR = 1`
+  - `CONFIGURATION_ERROR = 2`
+  - `INITIALIZATION_ERROR = 3`
+  - `VALIDATION_ERROR = 4`
+  - `RESOURCE_NOT_FOUND = 5`
+  - `PERMISSION_DENIED = 6`
+  - `TIMEOUT_ERROR = 7`
+
+- **Process-specific errors (100-199)**
+  - `PROCESS_ENGINE_ERROR = 100`
+  - `TEXT_PROCESSING_ERROR = 101`
+  - `RESOURCE_UNAVAILABLE = 102`
+  - `UNSUPPORTED_FORMAT = 103`
+
+- **Service-specific errors (200-299)**
+  - `SERVICE_UNAVAILABLE = 200`
+  - `INVALID_REQUEST = 201`
+  - `SERIALIZATION_ERROR = 202`
+  - `COMMUNICATION_ERROR = 203`
+
+- **Plugin-specific errors (300-399)**
+  - `PLUGIN_NOT_FOUND = 300`
+  - `PLUGIN_INITIALIZATION_ERROR = 301`
+  - `PLUGIN_EXECUTION_ERROR = 302`
+
+- **External service errors (400-499)**
+  - `EXTERNAL_SERVICE_ERROR = 400`
+  - `NETWORK_ERROR = 401`
+  - `AUTHENTICATION_ERROR = 402`
+  - `RATE_LIMIT_EXCEEDED = 403`
+
+### Utilities (`utils.py`)
+
+Common utility functions used across all components.
+
+```python
+from core.utils import generate_id, create_temp_file, calculate_hash
+
+# Generate a unique ID
+id = generate_id("prefix-")
+
+# Create a temporary file
+file_path = create_temp_file(data, suffix=".txt")
+
+# Calculate a hash
+hash_value = calculate_hash(data)
+```
+
+## Best Practices
+
+### Configuration
+
+1. Use the `core.config_manager` module for all configuration needs
+2. Define clear environment variable names with component prefixes
+3. Validate configuration against a schema before using it
+4. Use environment-specific overlays for different deployment environments
+
+### Logging
+
+1. Get a logger for each module with a specific name
+2. Use appropriate log levels for different types of messages
+3. Include relevant context in log messages
+4. Configure logging at the application level
+
+### Error Handling
+
+1. Define specific error types for different error conditions
+2. Use standard error codes for consistent error reporting
+3. Include relevant details in error messages
+4. Handle errors at the appropriate level
+5. Convert exceptions to standardized errors before returning to clients
+
+### Utilities
+
+1. Use the provided utility functions instead of reimplementing common functionality
+2. Keep utility functions focused on a single responsibility
+3. Document utility functions clearly
+
+
+
 
 
 ### 4.1. Modularność narzędzi jakości kodu

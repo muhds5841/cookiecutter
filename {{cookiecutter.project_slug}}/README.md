@@ -1,80 +1,105 @@
-# {{ cookiecutter.project_name }}
+# Process System
 
-{{ cookiecutter.project_description }}
+A modular and extensible processing system with multiple service interfaces including gRPC, REST API, and Model Context Protocol (MCP) integration.
 
-## Struktura projektu
+## Overview
 
-{% if cookiecutter.components.process %}
-- process/                    # Główny proces (dowolny)
-  ├── Dockerfile
-  ├── pyproject.toml
-  ├── __init__.py
-  ├── process.py              # Główna logika procesu
-  └── adapters/               # Adaptery dla różnych implementacji
-{% endif %}
-{% if cookiecutter.components.mcp %}
-- mcp/                       # Komponent MCP
-  ├── Dockerfile
-  ├── pyproject.toml
-  ├── mcp_server.py          # Serwer MCP
-  ├── transports/            # Implementacje transportu (SSE, stdio, hybrid)
-  ├── protocol/              # Obsługa protokołu MCP
-  ├── tools/                 # Narzędzia MCP
-  ├── resources/             # Zasoby MCP z URI templates
-  └── sampling/              # Strategie próbkowania dla LLM
-{% endif %}
-{% if cookiecutter.components.grpc %}
-- grpc/                      # Serwis gRPC
-{% endif %}
-{% if cookiecutter.components.rest %}
-- rest/                      # Serwis REST API
-{% endif %}
-{% if cookiecutter.components.webrtc %}
-- webrtc/                    # Serwis WebRTC
-{% endif %}
-{% if cookiecutter.components.shell %}
-- shell/                     # Interfejs CLI
-{% endif %}
-- lib/                       # Wspólne biblioteki
-- quality/                   # Konfiguracje QA
-- tests/                     # Testy
+The Process system provides a flexible framework for text processing with a plugin architecture that allows for easy extension. It includes multiple service interfaces for integration with various systems and a comprehensive configuration and error handling system.
 
-## Funkcjonalności
+## Architecture
 
-{% if cookiecutter.components.process %}
-- Główny proces z obsługą wielu implementacji
-{% endif %}
-{% if cookiecutter.components.mcp %}
-- Integracja z Model Context Protocol (MCP) umożliwiająca łatwą integrację z LLM
-- Wsparcie dla transportów MCP: {% if cookiecutter.mcp_configuration.transports.sse %}SSE{% endif %}{% if cookiecutter.mcp_configuration.transports.stdio %}, stdio{% endif %}{% if cookiecutter.mcp_configuration.transports.grpc %}, gRPC{% endif %}
-{% if cookiecutter.mcp_configuration.include_discovery %}
-- Automatyczne wykrywanie narzędzi
-{% endif %}
-{% if cookiecutter.mcp_configuration.include_tool_registry %}
-- Rejestr narzędzi i URI templates
-{% endif %}
-{% if cookiecutter.mcp_configuration.include_adaptive_sampling %}
-- Adaptacyjne próbkowanie dla LLM
-{% endif %}
-{% endif %}
-{% if cookiecutter.components.grpc %}
-- Interfejs gRPC
-{% endif %}
-{% if cookiecutter.components.rest %}
-- Interfejs REST API
-{% endif %}
-{% if cookiecutter.components.webrtc %}
-- Wsparcie dla WebRTC
-{% endif %}
-{% if cookiecutter.components.shell %}
-- Interfejs wiersza poleceń
-{% endif %}
+The system is built with a modular architecture that separates concerns and allows components to be deployed independently:
 
-## Instalacja
+- **Core Process Engine**: The central component responsible for text processing
+- **Service Interfaces**: Multiple interfaces (gRPC, REST, MCP) for accessing the Process functionality
+- **Plugin System**: Extensible architecture for adding new processing capabilities
+- **Core Framework**: Common utilities for configuration, logging, and error handling
+
+## Project Structure
+
+```
+project/
+├── process/                  # Core Process Engine
+│   ├── Dockerfile
+│   ├── pyproject.toml
+│   ├── __init__.py
+│   ├── process.py            # Main Process implementation
+│   ├── process_base.py       # Abstract base class
+│   ├── plugin_system.py      # Plugin architecture
+│   └── adapters/             # Adapters for different implementations
+├── grpc/                    # gRPC Service
+│   ├── Dockerfile
+│   ├── pyproject.toml
+│   ├── server.py             # gRPC server implementation
+│   ├── client.py             # gRPC client
+│   └── proto/                # Protocol buffer definitions
+├── rest/                    # REST API Service
+│   ├── Dockerfile
+│   ├── pyproject.toml
+│   ├── server.py             # REST server implementation
+│   └── client.py             # REST client
+├── mcp/                     # Model Context Protocol
+│   ├── Dockerfile
+│   ├── pyproject.toml
+│   ├── mcp_server.py         # MCP server
+│   ├── transports/           # Transport implementations
+│   ├── protocol/             # Protocol handling
+│   ├── tools/                # MCP tools
+│   └── resources/            # MCP resources
+├── core/                    # Core framework
+│   ├── __init__.py
+│   ├── config.py             # Basic configuration
+│   ├── config_manager.py     # Enhanced configuration management
+│   ├── logging.py            # Logging utilities
+│   ├── utils.py              # Common utilities
+│   └── error_handling.py     # Standardized error handling
+├── tests/                   # Tests
+│   ├── process_tests/        # Process engine tests
+│   ├── grpc_tests/           # gRPC service tests
+│   ├── rest_tests/           # REST API tests
+│   ├── mcp_tests/            # MCP tests
+│   └── e2e_tests/            # End-to-end tests
+├── docker-compose.yml        # Docker Compose configuration
+├── dev_setup.py             # Development environment setup
+└── README.md                # This file
+```
+
+## Key Features
+
+- **Modular Architecture**: Each component can be deployed and scaled independently
+- **Multiple Interfaces**: gRPC, REST API, and MCP for integration with various systems
+- **Plugin System**: Easily extend functionality with plugins
+- **Unified Configuration**: Centralized configuration management with environment overlays
+- **Standardized Error Handling**: Consistent error reporting across all components
+- **Comprehensive Logging**: Structured logging throughout the system
+- **Docker Support**: Containerized deployment with Docker Compose
+- **Development Tools**: Simplified development environment setup
+
+## Getting Started
+
+### Quick Start
+
+The easiest way to get started is to use the development setup script:
 
 ```bash
-# Instalacja zależności
-poetry install
+# Set up the development environment
+python dev_setup.py
 
-# Konfiguracja narzędzi jakości kodu
+# Start the services
+docker-compose up -d
+```
+
+### Manual Setup
+
+If you prefer to set up the environment manually:
+
+```bash
+# Install dependencies for each component
+cd process && poetry install
+cd ../grpc && poetry install
+cd ../rest && poetry install
+cd ../mcp && poetry install
+
+# Set up pre-commit hooks
+pip install pre-commit
 pre-commit install
