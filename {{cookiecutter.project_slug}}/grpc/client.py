@@ -1,5 +1,5 @@
 """
-Klient gRPC dla usługi Text-to-Speech.
+Klient gRPC dla usługi Process.
 """
 
 import os
@@ -15,15 +15,15 @@ from lib.config import load_config
 from lib.logging import get_logger, configure_logging
 
 # Importy wygenerowane z proto (będą dostępne po wygenerowaniu kodu z proto)
-# from proto.generated import tts_pb2, tts_pb2_grpc
+# from proto.generated import process_pb2, process_pb2_grpc
 
 # Tymczasowa implementacja klas protobuf do czasu wygenerowania ich z pliku .proto
-class TtsRequest:
-    def __init__(self, text="", language="", voice="", format="wav"):
+class ProcessRequest:
+    def __init__(self, text="", language="", resource="", output_format="wav"):
         self.text = text
         self.language = language
-        self.voice = voice
-        self.format = format
+        self.resource = resource
+        self.output_format = output_format
 
 class EmptyRequest:
     pass

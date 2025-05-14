@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package process;
+
+// Service definition for the Process service
+service ProcessService {
+  // Process text and return the processed result
+  rpc ProcessText (ProcessRequest) returns (ProcessResponse) {}
+  
+  // Get available resources (languages, models, etc.)
+  rpc GetResources (ResourceRequest) returns (ResourceResponse) {}
+  
+  // Stream processed results
+  rpc StreamProcess (ProcessRequest) returns (stream ProcessResponse) {}
+  
+  // Health check
+  rpc HealthCheck (HealthCheckRequest) returns (HealthCheckResponse) {}
+}
+
+// Request message for processing text
+message ProcessRequest {
+  // Text to process
+  string text = 1;
+  
+  // Configuration options
+  ProcessConfig config = 2;
+}
+
+// Configuration for processing
+message ProcessConfig {
+  // Resource to use (model, voice, etc.)
+  string resource = 1;
+  
+  // Language code (e.g., "en-US")
+  string language = 2;
+  
+  // Output format (e.g., "wav", "mp3", "json")
+  string output_format = 3;
+  
+  // Additional parameters as key-value pairs
+  map<string, string> parameters = 4;
+}
+
+// Response message with processed result
+message ProcessResponse {
+  // Unique identifier for this result
+  string result_id = 1;
+  
+  // Format of the result data
+  string format = 2;
+  
+  // Result data (base64 encoded if binary)
+  bytes data = 3;
+  
+  // Additional metadata as key-value pairs
+  map<string, string> metadata = 4;
+}
+
+// Request message for getting available resources
+message ResourceRequest {
+  // Type of resources to retrieve
+  string resource_type = 1;
+  
+  // Filter criteria
+  map<string, string> filters = 2;
+}
+
+// Response message with available resources
+message ResourceResponse {
+  // List of resources
+  repeated Resource resources = 1;
+}
+
+// Resource information
+message Resource {
+  // Resource identifier
+  string id = 1;
+  
+  // Resource name
+  string name = 2;
+  
+  // Resource type
+  string type = 3;
+  
+  // Resource metadata
+  map<string, string> metadata = 4;
+}
+
+// Request message for health check
+message HealthCheckRequest {
+  // Service name to check
+  string service = 1;
+}
+
+// Response message for health check
+message HealthCheckResponse {
+  // Health status
+  enum ServingStatus {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+    SERVICE_UNKNOWN = 3;
+  }
+  ServingStatus status = 1;
+}

@@ -1,5 +1,5 @@
 """
-Serwer gRPC dla usługi Text-to-Speech.
+Serwer gRPC dla usługi Process.
 """
 
 import os
@@ -17,31 +17,33 @@ from lib.config import load_config
 from lib.logging import get_logger, configure_logging
 
 # Importy wygenerowane z proto (będą dostępne po wygenerowaniu kodu z proto)
-# from proto.generated import tts_pb2, tts_pb2_grpc
+# from proto.generated import process_pb2, process_pb2_grpc
 
 # Tymczasowa implementacja klas protobuf do czasu wygenerowania ich z pliku .proto
-class TtsRequest:
-    def __init__(self, text="", language="", voice="", format="wav"):
+class ProcessRequest:
+    def __init__(self, text="", language="", resource="", output_format="wav"):
         self.text = text
         self.language = language
-        self.voice = voice
-        self.format = format
+        self.resource = resource
+        self.output_format = output_format
 
-class TtsResponse:
-    def __init__(self, audio_id="", format="", base64=""):
-        self.audio_id = audio_id
+class ProcessResponse:
+    def __init__(self, result_id="", format="", data="", metadata=None):
+        self.result_id = result_id
         self.format = format
-        self.base64 = base64
+        self.data = data
+        self.metadata = metadata or {}
 
-class VoiceInfo:
-    def __init__(self, name="", language="", gender=""):
+class ResourceInfo:
+    def __init__(self, id="", name="", type="", metadata=None):
+        self.id = id
         self.name = name
-        self.language = language
-        self.gender = gender
+        self.type = type
+        self.metadata = metadata or {}
 
-class VoicesResponse:
-    def __init__(self, voices=None):
-        self.voices = voices or []
+class ResourcesResponse:
+    def __init__(self, resources=None):
+        self.resources = resources or []
 
 class LanguagesResponse:
     def __init__(self, languages=None):
@@ -51,7 +53,7 @@ class EmptyRequest:
     pass
 
 # Tymczasowa implementacja serwisu gRPC do czasu wygenerowania kodu z proto
-class TtsServiceServicer:
+class ProcessServiceServicer:
     """Implementacja serwisu TTS dla gRPC."""
     
     def __init__(self, process: Process):
