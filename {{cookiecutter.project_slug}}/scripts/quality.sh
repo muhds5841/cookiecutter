@@ -72,13 +72,34 @@ run_test "zgodności z PEP 8 (flake8)" "flake8 $TARGET_DIR" "false" ""
 run_test "statycznej analizy kodu (pylint)" "pylint --recursive=y $TARGET_DIR" "false" ""
 run_test "typów (mypy)" "mypy $TARGET_DIR" "false" ""
 
-# Uruchom testy tylko jeśli katalog tests istnieje
-if [ -d "$TARGET_DIR/tests" ] || [ "$TARGET_DIR" = "tests" ] || [ -d "tests" ]; then
-    run_test "testów jednostkowych (pytest)" "pytest $TARGET_DIR" "false" ""
+# Uruchamianie testów
+if [ "$TARGET_DIR" = "." ]; then
+    # Dla całego projektu uruchamiamy wszystkie testy
+    run_test "testów jednostkowych (pytest)" "pytest" "false" ""
+elif [[ "$TARGET_DIR" == *"/" ]]; then
+    # Jeśli ścieżka kończy się na "/", usuwamy ostatni znak
+    TARGET_DIR=${TARGET_DIR%/}
+    # Sprawdzamy, czy w katalogu są pliki testów
+    if ls "$TARGET_DIR"/test_*.py &> /dev/null || [ -d "$TARGET_DIR/tests" ]; then
+        echo ""
+        echo "=== Uruchamianie testów dla modułu: $TARGET_DIR ==="
+        run_test "testów jednostkowych (pytest)" "pytest $TARGET_DIR" "false" ""
+    else
+        echo ""
+        echo "=== Pomijanie testów jednostkowych (pytest) ==="
+        echo "Nie znaleziono plików testów w katalogu $TARGET_DIR."
+    fi
 else
-    echo ""
-    echo "=== Pomijanie testów jednostkowych (pytest) ==="
-    echo "Nie znaleziono katalogu z testami."
+    # Sprawdzamy, czy w katalogu są pliki testów
+    if ls "$TARGET_DIR"/test_*.py &> /dev/null || [ -d "$TARGET_DIR/tests" ]; then
+        echo ""
+        echo "=== Uruchamianie testów dla modułu: $TARGET_DIR ==="
+        run_test "testów jednostkowych (pytest)" "pytest $TARGET_DIR" "false" ""
+    else
+        echo ""
+        echo "=== Pomijanie testów jednostkowych (pytest) ==="
+        echo "Nie znaleziono plików testów w katalogu $TARGET_DIR."
+    fi
 fi
 
 # Podsumowanie

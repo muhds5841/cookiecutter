@@ -11,12 +11,12 @@ from typing import Any, Dict
 # Dodaj katalog nadrzędny do ścieżki, aby umożliwić import z process i lib
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# Importy bibliotek zewnętrznych
-import grpc
-
 # Importy wewnętrzne
 from lib.config import load_config
 from lib.logging import configure_logging, get_logger
+
+# Importy bibliotek zewnętrznych
+import grpc
 from process.process import Process
 
 # Importy wygenerowane z proto (będą dostępne po wygenerowaniu kodu z proto)
@@ -65,6 +65,7 @@ class EmptyRequest:
 # Tymczasowa implementacja klas protobuf do czasu wygenerowania ich z pliku .proto
 class TtsRequest:
     """Klasa reprezentująca żądanie syntezy mowy."""
+
     def __init__(self, text="", language="", voice="", format="wav"):
         self.text = text
         self.language = language
@@ -74,6 +75,7 @@ class TtsRequest:
 
 class TtsResponse:
     """Klasa reprezentująca odpowiedź syntezy mowy."""
+
     def __init__(self, audio_id="", format="", base64="", error=""):
         self.audio_id = audio_id
         self.format = format
@@ -83,6 +85,7 @@ class TtsResponse:
 
 class VoiceInfo:
     """Klasa reprezentująca informacje o głosie."""
+
     def __init__(self, name="", language="", gender=""):
         self.name = name
         self.language = language
@@ -91,6 +94,7 @@ class VoiceInfo:
 
 class VoicesResponse:
     """Klasa reprezentująca odpowiedź z listą dostępnych głosów."""
+
     def __init__(self, voices=None):
         self.voices = voices or []
 
@@ -98,14 +102,14 @@ class VoicesResponse:
 # Tymczasowa implementacja serwisu gRPC do czasu wygenerowania kodu z proto
 class ProcessServiceServicer:
     """Implementacja serwisu TTS dla gRPC.
-    
+
     Klasa implementuje metody serwisu gRPC dla systemu TTS, umożliwiając
     konwersję tekstu na mowę oraz pobieranie informacji o dostępnych głosach i językach.
     """
 
     def __init__(self, process: Process):
         """Inicjalizuje serwis gRPC.
-        
+
         Args:
             process: Instancja silnika Process do przetwarzania żądań.
         """
@@ -114,11 +118,11 @@ class ProcessServiceServicer:
 
     def synthesize(self, request, context):
         """Konwertuje tekst na mowę.
-        
+
         Args:
             request: Żądanie zawierające tekst do konwersji i parametry.
             context: Kontekst gRPC.
-            
+
         Returns:
             Odpowiedź zawierająca dane audio.
         """
@@ -155,11 +159,11 @@ class ProcessServiceServicer:
 
     def get_voices(self, request, context):
         """Pobiera listę dostępnych głosów.
-        
+
         Args:
             request: Puste żądanie.
             context: Kontekst gRPC.
-            
+
         Returns:
             Odpowiedź zawierająca listę dostępnych głosów.
         """
@@ -190,11 +194,11 @@ class ProcessServiceServicer:
 
     def get_languages(self, request, context):
         """Pobiera listę dostępnych języków.
-        
+
         Args:
             request: Puste żądanie.
             context: Kontekst gRPC.
-            
+
         Returns:
             Odpowiedź zawierająca listę dostępnych języków.
         """
