@@ -1,0 +1,5 @@
+# Negocjacja wersji
+"""
+negotiation.py
+"""
+

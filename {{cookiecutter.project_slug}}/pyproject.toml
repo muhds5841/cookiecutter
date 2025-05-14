@@ -1,0 +1,64 @@
+#### `{{cookiecutter.project_slug}}/pyproject.toml`
+
+```toml
+[tool.poetry]
+name = "{{ cookiecutter.project_slug }}"
+version = "0.1.0"
+description = "{{ cookiecutter.project_description }}"
+authors = ["{{ cookiecutter.author_name }} <{{ cookiecutter.author_email }}>"]
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^{{ cookiecutter.python_version }}"
+{% if cookiecutter.components.tts_engine %}
+pydantic = "^2.5.0"
+{% endif %}
+{% if cookiecutter.components.grpc %}
+grpcio = "^1.59.0"
+protobuf = "^4.25.0"
+{% endif %}
+{% if cookiecutter.components.rest %}
+fastapi = "^0.104.0"
+uvicorn = "^0.23.0"
+{% endif %}
+{% if cookiecutter.components.webrtc %}
+aiortc = "^1.5.0"
+websockets = "^11.0.3"
+{% endif %}
+{% if cookiecutter.components.mcp %}
+mcp = "^0.1.0"
+{% endif %}
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+isort = "^5.12.0"
+flake8 = "^6.1.0"
+mypy = "^1.5.1"
+pytest = "^7.4.0"
+pytest-cov = "^4.1.0"
+tox = "^4.11.0"
+pre-commit = "^3.3.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+target-version = ["py{{ cookiecutter.python_version.replace('.', '') }}"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "{{ cookiecutter.python_version }}"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"

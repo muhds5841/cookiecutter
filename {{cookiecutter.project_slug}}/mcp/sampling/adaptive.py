@@ -1,0 +1,5 @@
+# Adaptacyjne próbkowanie
+"""
+adaptive.py
+"""
+

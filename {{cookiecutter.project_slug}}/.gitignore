@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.pyc
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+coverage.xml
+*.cover
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.envrc
+
+# Docker
+{% if cookiecutter.use_docker == "yes" %}
+.dockerignore
+{% endif %}
+
+# OS specific
+.DS_Store
+Thumbs.db

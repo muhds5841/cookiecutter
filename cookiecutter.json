@@ -1,5 +1,5 @@
 {
-  "project_name": "TTS Project",
+  "project_name": " Project",
   "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
   "project_description": "A modular text-to-speech system with MCP integration",
   "author_name": "Your Name",

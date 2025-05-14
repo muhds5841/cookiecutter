@@ -1,0 +1,36 @@
+name: Test Cookiecutter Template
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install cookiecutter pytest
+
+    - name: Test template generation
+      run: |
+        cookiecutter --no-input . project_name="Test Project" python_version="${{ matrix.python-version }}"
+        cd test_project
+        pip install poetry
+        poetry install
+        poetry run pytest

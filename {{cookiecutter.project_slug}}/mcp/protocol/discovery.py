@@ -1,0 +1,5 @@
+# Wykrywanie narzędzi
+"""
+discovery.py
+"""
+

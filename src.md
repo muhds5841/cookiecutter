@@ -16,12 +16,12 @@ cookiecutter-tts-project/
     │   ├── logging.py
     │   ├── utils.py
     │   └── quality/                   # Narzędzia jakości kodu
-    ├── tts_engine/                    # Silnik TTS
+    ├── tts_engine/                    # Silnik 
     │   ├── Dockerfile
     │   ├── pyproject.toml
     │   ├── __init__.py
     │   ├── tts_engine.py
-    │   └── adapters/                  # Adaptery dla różnych silników TTS
+    │   └── adapters/                  # Adaptery dla różnych silników 
     ├── mcp/                           # Komponent MCP (nowy/rozszerzony)
     │   ├── Dockerfile
     │   ├── pyproject.toml
@@ -37,7 +37,7 @@ cookiecutter-tts-project/
     │   │   └── discovery.py           # Wykrywanie narzędzi
     │   ├── tools/                     # Narzędzia MCP
     │   │   ├── __init__.py
-    │   │   └── tts_tool.py            # Narzędzie TTS
+    │   │   └── tts_tool.py            # Narzędzie 
     │   ├── resources/                 # Zasoby MCP
     │   │   ├── __init__.py
     │   │   └── uri_templates.py       # Definicje URI templates
