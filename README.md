@@ -122,7 +122,7 @@ chmod +x hooks/post_gen_project.py
 make up
 ```
 
-{% if cookiecutter.components.mcp %}
+{% if cookiecutter.use_mcp == 'yes' %}
 Aby uruchomić serwer MCP:
 ```bash
 cd mcp

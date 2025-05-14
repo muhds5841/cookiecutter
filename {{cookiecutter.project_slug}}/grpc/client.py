@@ -6,7 +6,7 @@ import argparse
 import base64
 import os
 import sys
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 # Dodaj katalog nadrzędny do ścieżki, aby umożliwić import z core
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -49,8 +49,8 @@ class ProcessRequest:
         self.output_format = output_format
 
 
-class TtsRequest:
-    """Klasa reprezentująca żądanie syntezy mowy."""
+class ServiceRequest:
+    """Klasa reprezentująca żądanie do serwisu."""
     def __init__(self, text="", language="", voice="", format="wav"):
         self.text = text
         self.language = language
@@ -60,11 +60,13 @@ class TtsRequest:
 
 class EmptyRequest:
     """Klasa reprezentująca puste żądanie."""
-    pass
+    def __init__(self):
+        """Inicjalizacja pustego żądania."""
+        # Puste żądanie nie ma żadnych parametrów
 
 
-class TtsClient:
-    """Klient gRPC dla usługi Text-to-Speech."""
+class ServiceClient:
+    """Klient gRPC dla usługi przetwarzania danych."""
 
     def __init__(self, host: str = "localhost", port: int = 50051):
         """Inicjalizuje klienta gRPC.
@@ -77,7 +79,7 @@ class TtsClient:
         self.channel = grpc.insecure_channel(f"{host}:{port}")
 
         # Utwórz stub klienta
-        # self.stub = tts_pb2_grpc.TtsServiceStub(self.channel)
+        # self.stub = service_pb2_grpc.ServiceStub(self.channel)
 
         self.logger.info(f"Klient gRPC połączony z {host}:{port}")
 

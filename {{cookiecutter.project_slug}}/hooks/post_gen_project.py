@@ -9,12 +9,19 @@ from pathlib import Path
 
 # Usunięcie komponentów, które nie zostały wybrane
 components = {
-    "process": {{cookiecutter.components.process}},
-    "grpc": {{cookiecutter.components.grpc}},
-    "rest": {{cookiecutter.components.rest}},
-    "webrtc": {{cookiecutter.components.webrtc}},
-    "mcp": {{cookiecutter.components.mcp}},
-    "shell": {{cookiecutter.components.shell}},
+    "process": "{{ cookiecutter.use_process }}" == "yes",
+    "grpc": "{{ cookiecutter.use_grpc }}" == "yes",
+    "rest": "{{ cookiecutter.use_rest }}" == "yes",
+    "mqtt": "{{ cookiecutter.use_mqtt }}" == "yes",
+    "ftp": "{{ cookiecutter.use_ftp }}" == "yes",
+    "webrtc": "{{ cookiecutter.use_webrtc }}" == "yes",
+    "websocket": "{{ cookiecutter.use_websocket }}" == "yes",
+    "imap": "{{ cookiecutter.use_imap }}" == "yes",
+    "smtp": "{{ cookiecutter.use_smtp }}" == "yes",
+    "pop3": "{{ cookiecutter.use_pop3 }}" == "yes",
+    "ssh": "{{ cookiecutter.use_ssh }}" == "yes",
+    "mcp": "{{ cookiecutter.use_mcp }}" == "yes",
+    "shell": "{{ cookiecutter.use_shell }}" == "yes",
 }
 
 for component, is_selected in components.items():
