@@ -1,0 +1,5 @@
+# Tryb interaktywny
+"""
+interactive.py
+"""
+

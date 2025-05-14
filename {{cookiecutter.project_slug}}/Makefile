@@ -9,8 +9,19 @@ setup:
 	poetry install
 	pre-commit install
 
+security:
+	@echo "Sprawdzanie bezpieczeństwa kodu..."
+	$(PYTHON) -m $(QUALITY_MODULE).security $(MODULES) --config-dir $(CONFIG_DIR)
+
+
+# Sprawdzanie dokumentacji
+doc-check:
+	@echo "Sprawdzanie dokumentacji kodu..."
+	$(PYTHON) -m lib.quality.custom.doc_checker $(MODULES)
+
+
 # Zadania związane z jakością kodu
-quality: format-check lint type-check test
+quality: format lint type-check security doc-check test
 
 # Formatowanie kodu
 format:
@@ -65,4 +76,5 @@ up:
 down:
 	@echo "Zatrzymywanie serwisów..."
 	docker-compose down
+
 {% endif %}

@@ -23,8 +23,9 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.black]
-line-length = 88
+line-length = 100
 target-version = ["py{{ cookiecutter.python_version.replace('.', '') }}"]
+include = '\.pyi?$'
 
 [tool.isort]
 profile = "black"
@@ -40,3 +41,4 @@ disallow_incomplete_defs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
+

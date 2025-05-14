@@ -1,0 +1,5 @@
+# Obsługa języków
+"""
+languages.py
+"""
+

@@ -1,0 +1,5 @@
+# Generatory raportów
+"""
+reporters.py
+"""
+
