@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Główny proces TTS
+  # Główny proces przetwarzania
   process:
     build:
       context: ./process
@@ -10,8 +10,14 @@ services:
       - ./process:/app
     env_file:
       - ./process/.env.example
+    environment:
+      - PROCESS_HOST=0.0.0.0
+      - PROCESS_PORT=8000
+      - PROCESS_LOG_LEVEL=INFO
+      - PROCESS_ENGINE_TYPE=default
+      - PROCESS_PLUGIN_DIR=./plugins
     networks:
-      - tts-network
+      - process-network
     restart: unless-stopped
 
   # Serwis gRPC
@@ -28,11 +34,16 @@ services:
     depends_on:
       - process
     networks:
-      - tts-network
+      - process-network
     restart: unless-stopped
     environment:
+      - GRPC_HOST=0.0.0.0
       - GRPC_PORT=50051
-      - GRPC_LOG_LEVEL=info
+      - GRPC_LOG_LEVEL=INFO
+      - GRPC_PROCESS_HOST=process
+      - GRPC_PROCESS_PORT=8000
+      - GRPC_ENABLE_REFLECTION=true
+      - GRPC_ENABLE_HEALTH_CHECK=true
 
   # Serwis REST
   rest:
@@ -48,12 +59,17 @@ services:
     depends_on:
       - process
     networks:
-      - tts-network
+      - process-network
     restart: unless-stopped
     environment:
       - REST_HOST=0.0.0.0
       - REST_PORT=5000
-      - REST_LOG_LEVEL=info
+      - REST_LOG_LEVEL=INFO
+      - REST_WORKERS=4
+      - REST_PROCESS_HOST=process
+      - REST_PROCESS_PORT=8000
+      - REST_CORS_ORIGINS=*
+      - REST_ENABLE_DOCS=true
 
   # Serwis WebRTC
   webrtc:
@@ -69,12 +85,14 @@ services:
     depends_on:
       - process
     networks:
-      - tts-network
+      - process-network
     restart: unless-stopped
     environment:
       - WEBRTC_HOST=0.0.0.0
       - WEBRTC_PORT=8080
-      - WEBRTC_LOG_LEVEL=info
+      - WEBRTC_LOG_LEVEL=INFO
+      - WEBRTC_PROCESS_HOST=process
+      - WEBRTC_PROCESS_PORT=8000
 
   # Serwis MCP
   mcp:
@@ -90,18 +108,69 @@ services:
     depends_on:
       - process
     networks:
-      - tts-network
+      - process-network
     restart: unless-stopped
     environment:
       - MCP_HOST=0.0.0.0
       - MCP_PORT=4000
-      - MCP_LOG_LEVEL=info
+      - MCP_LOG_LEVEL=INFO
+      - MCP_PROCESS_HOST=process
+      - MCP_PROCESS_PORT=8000
       - MCP_TRANSPORTS_SSE=true
-      - MCP_TRANSPORTS_STDIO=true
+      - MCP_TRANSPORTS_STDIO=false
       - MCP_TRANSPORTS_GRPC=false
+      - MCP_ENABLE_RESOURCE_CACHE=true
+      
+  # Serwis MQTT
+  mqtt:
+    build:
+      context: ./mqtt
+      dockerfile: Dockerfile
+    volumes:
+      - ./mqtt:/app
+    env_file:
+      - ./mqtt/.env.example
+    ports:
+      - "1883:1883"
+    depends_on:
+      - process
+    networks:
+      - process-network
+    restart: unless-stopped
+    environment:
+      - MQTT_HOST=0.0.0.0
+      - MQTT_PORT=1883
+      - MQTT_LOG_LEVEL=INFO
+      - MQTT_PROCESS_HOST=process
+      - MQTT_PROCESS_PORT=8000
+      - MQTT_TOPIC_PREFIX=process
+      - MQTT_QOS=1
+      
+  # Serwis WebSocket
+  websocket:
+    build:
+      context: ./websocket
+      dockerfile: Dockerfile
+    volumes:
+      - ./websocket:/app
+    env_file:
+      - ./websocket/.env.example
+    ports:
+      - "6789:6789"
+    depends_on:
+      - process
+    networks:
+      - process-network
+    restart: unless-stopped
+    environment:
+      - WEBSOCKET_HOST=0.0.0.0
+      - WEBSOCKET_PORT=6789
+      - WEBSOCKET_LOG_LEVEL=INFO
+      - WEBSOCKET_PROCESS_HOST=process
+      - WEBSOCKET_PROCESS_PORT=8000
 
 networks:
-  tts-network:
+  process-network:
     driver: bridge
 
 volumes:

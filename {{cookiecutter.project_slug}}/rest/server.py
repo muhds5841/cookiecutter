@@ -1,5 +1,5 @@
 """
-Serwer REST dla usługi Text-to-Speech.
+Serwer REST dla usługi Process.
 """
 
 import os
@@ -22,31 +22,33 @@ from lib.logging import get_logger, configure_logging
 
 
 # Modele danych
-class TtsRequest(BaseModel):
-    """Model żądania syntezy mowy."""
-    text: str = Field(..., description="Tekst do konwersji na mowę")
+class ProcessRequest(BaseModel):
+    """Model żądania przetwarzania tekstu."""
+    text: str = Field(..., description="Tekst do przetworzenia")
     language: Optional[str] = Field(None, description="Kod języka (np. 'en-US', 'pl-PL')")
-    voice: Optional[str] = Field(None, description="Nazwa głosu do użycia")
-    format: str = Field("wav", description="Format wyjściowy audio (wav, mp3)")
+    resource: Optional[str] = Field(None, description="Identyfikator zasobu do użycia")
+    output_format: str = Field("wav", description="Format wyjściowy (wav, mp3, json)")
 
 
-class TtsResponse(BaseModel):
-    """Model odpowiedzi z wynikiem syntezy mowy."""
-    audio_id: str = Field(..., description="Identyfikator wygenerowanego audio")
-    format: str = Field(..., description="Format audio (wav, mp3)")
-    base64: str = Field(..., description="Dane audio zakodowane w base64")
+class ProcessResponse(BaseModel):
+    """Model odpowiedzi z wynikiem przetwarzania."""
+    result_id: str = Field(..., description="Identyfikator wygenerowanego wyniku")
+    format: str = Field(..., description="Format wyniku (wav, mp3, json)")
+    data: str = Field(..., description="Dane wyniku zakodowane w base64")
+    metadata: Dict[str, str] = Field(default_factory=dict, description="Metadane wyniku")
 
 
-class VoiceInfo(BaseModel):
-    """Model informacji o głosie."""
-    name: str = Field(..., description="Nazwa głosu")
-    language: str = Field(..., description="Kod języka (np. 'en-US', 'pl-PL')")
-    gender: str = Field(..., description="Płeć głosu (male, female)")
+class ResourceInfo(BaseModel):
+    """Model informacji o zasobie."""
+    id: str = Field(..., description="Identyfikator zasobu")
+    name: str = Field(..., description="Nazwa zasobu")
+    type: str = Field(..., description="Typ zasobu")
+    metadata: Dict[str, str] = Field(default_factory=dict, description="Metadane zasobu")
 
 
-class VoicesResponse(BaseModel):
-    """Model odpowiedzi z listą dostępnych głosów."""
-    voices: List[VoiceInfo] = Field(..., description="Lista dostępnych głosów")
+class ResourcesResponse(BaseModel):
+    """Model odpowiedzi z listą dostępnych zasobów."""
+    resources: List[ResourceInfo] = Field(..., description="Lista dostępnych zasobów")
 
 
 class LanguagesResponse(BaseModel):
@@ -56,7 +58,7 @@ class LanguagesResponse(BaseModel):
 
 # Aplikacja FastAPI
 app = FastAPI(
-    title="Process TTS REST API",
+    title="Process REST API",
     description="REST API dla usługi Text-to-Speech",
     version="0.1.0"
 )

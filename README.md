@@ -40,45 +40,60 @@ cookiecutter-project/
     ├── pyproject.toml                 # Konfiguracja Poetry
     ├── README.md                      # Dokumentacja projektu
     ├── .gitignore                     # Pliki ignorowane przez Git
-    ├── lib/                           # Wspólne biblioteki
+    ├── core/                           # Rdzeń frameworka
     │   ├── __init__.py
-    │   ├── config.py
-    │   ├── logging.py
-    │   ├── utils.py
-    │   └── quality/                   # Narzędzia jakości kodu
-    ├── process/                       # Główny proces (dowolny)
+    │   ├── config.py                    # Podstawowa konfiguracja
+    │   ├── config_manager.py            # Zaawansowane zarządzanie konfiguracją
+    │   ├── logging.py                   # Narzędzia logowania
+    │   ├── utils.py                     # Wspólne narzędzia
+    │   └── error_handling.py            # Standardowa obsługa błędów
+    ├── grpc/                         # Usługa gRPC
     │   ├── Dockerfile
     │   ├── pyproject.toml
+    │   ├── server.py                    # Implementacja serwera gRPC
+    │   ├── client.py                    # Klient gRPC
+    │   └── proto/                       # Definicje Protocol Buffer
+    ├── rest/                         # Usługa REST API
+    │   ├── Dockerfile
+    │   ├── pyproject.toml
+    │   ├── server.py                    # Implementacja serwera REST
+    │   └── client.py                    # Klient REST
+    ├── mcp/                          # Model Context Protocol
+    │   ├── Dockerfile
+    │   ├── pyproject.toml
+    │   ├── mcp_server.py                # Serwer MCP
+    │   ├── tools/                       # Narzędzia MCP
+    │   ├── resources/                   # Zasoby MCP
+    │   └── transports/                  # Implementacje transportów
+    ├── mqtt/                         # Usługa MQTT
+    │   ├── Dockerfile
+    │   ├── server.py                    # Serwer MQTT
+    │   └── client.py                    # Klient MQTT
+    ├── websocket/                    # Usługa WebSocket
+    │   ├── Dockerfile
+    │   ├── server.py                    # Serwer WebSocket
+    │   └── client.py                    # Klient WebSocket
+    ├── langchain/                    # Integracja z LangChain dla LLM
+    │   ├── Dockerfile
+    │   ├── tools.py                     # Narzędzia LangChain
+    │   └── chains.py                    # Łańcuchy LangChain
+    ├── quality/                      # Narzędzia jakości kodu
+    │   ├── __init__.py
+    │   ├── lint.py
+    │   ├── format.py
+    │   ├── security.py
+    │   └── complexity.py
+    ├── process/                       # Silnik Process
+    │   ├── Dockerfile
+    │   ├── pyproject.toml
+    │   ├── __init__.py
+    │   ├── process.py                   # Główna implementacja Process
+    │   ├── process_base.py              # Klasa bazowa abstrakcyjna
+    │   ├── plugin_system.py             # Architektura wtyczek
+    │   └── adapters/                    # Adaptery dla różnych implementacji
     │   ├── __init__.py
     │   ├── process.py
-    │   └── adapters/                  # Adaptery dla różnych implementacji
-    ├── mcp/                           # Komponent MCP (nowy/rozszerzony)
-    │   ├── Dockerfile
-    │   ├── pyproject.toml
-    │   ├── mcp_server.py              # Serwer MCP
-    │   ├── transports/                # Implementacje transportu
-    │   │   ├── __init__.py
-    │   │   ├── sse.py                 # Server-Sent Events
-    │   │   ├── stdio.py               # Komunikacja przez stdout/stdin
-    │   │   └── hybrid.py              # Wieloprotokołowy serwer
-    │   ├── protocol/                  # Obsługa protokołu MCP
-    │   │   ├── __init__.py
-    │   │   ├── negotiation.py         # Negocjacja wersji
-    │   │   └── discovery.py           # Wykrywanie narzędzi
-    │   ├── tools/                     # Narzędzia MCP
-    │   │   ├── __init__.py
-    │   │   └── process_tool.py        # Narzędzie ogólne (dowolny proces)
-    │   ├── resources/                 # Zasoby MCP
-    │   │   ├── __init__.py
-    │   │   └── uri_templates.py       # Definicje URI templates
-    │   └── sampling/                  # Strategie próbkowania dla LLM
-    │       ├── __init__.py
-    │       └── adaptive.py            # Adaptacyjne próbkowanie
-    ├── grpc/                          # Serwis gRPC
-    ├── rest/                          # Serwis REST
-    ├── webrtc/                        # Serwis WebRTC
-    ├── shell/                         # CLI
-    └── tests/                         # Testy
+    ├── tests/                         # Testy
         ├── __init__.py
         ├── conftest.py
         └── mcp_tests/                 # Testy komponentów MCP
@@ -97,7 +112,7 @@ poetry install
 
 ## Uruchamianie
 
-```aiignore
+```bash
 # Ustaw uprawnienia wykonywania dla skryptów
 chmod +x hooks/pre_gen_project.py
 chmod +x hooks/post_gen_project.py
@@ -118,7 +133,7 @@ poetry run python mcp_server.py
 ## Funkcjonalności
 
 - Modularny system z wieloma komponentami
-- Wsparcie dla różnych protokołów komunikacyjnych (gRPC, REST, WebRTC)
+- Wsparcie dla różnych protokołów komunikacyjnych (gRPC, REST, WebRTC, MCP, MQTT, WebSocket)
 - Integracja z Model Context Protocol (MCP)
 - Narzędzia zapewnienia jakości kodu (Black, isort, Flake8, mypy)
 - Automatyczna konfiguracja pre-commit hooks
@@ -127,8 +142,39 @@ poetry run python mcp_server.py
 
 ## Konfiguracja
 
-- Plik `cookiecutter.json` pozwala na wybór komponentów oraz ustawienia projektu.
-- Szczegółowe opcje konfiguracyjne opisane są w dokumentacji każdego komponentu.
+### Konfiguracja szablonu
+
+- Konfiguracja projektu znajduje się w pliku `cookiecutter.json`.
+
+### Konfiguracja środowiska
+
+Wygenerowany projekt używa spójnego systemu zmiennych środowiskowych z prefiksami dla każdego komponentu:
+
+- `CORE_*` - Ustawienia rdzenia frameworka
+- `PROCESS_*` - Ustawienia silnika Process
+- `GRPC_*` - Ustawienia usługi gRPC
+- `REST_*` - Ustawienia usługi REST API
+- `MCP_*` - Ustawienia usługi MCP
+- `MQTT_*` - Ustawienia usługi MQTT
+- `WEBSOCKET_*` - Ustawienia usługi WebSocket
+- `LANGCHAIN_*` - Ustawienia integracji LangChain
+
+Można używać jednego pliku `.env` dla całego projektu lub oddzielnych plików dla każdego komponentu:
+
+```bash
+# Kopiowanie przykładowych plików środowiskowych
+cp .env.example .env
+
+# Lub dla poszczególnych komponentów
+cp process/.env.example process/.env
+cp grpc/.env.example grpc/.env
+cp rest/.env.example rest/.env
+cp mcp/.env.example mcp/.env
+cp mqtt/.env.example mqtt/.env
+cp websocket/.env.example websocket/.env
+```
+
+Szczegółowa dokumentacja zmiennych środowiskowych znajduje się w pliku `docs/environment_variables.md`.
 
 ## Testy
 
@@ -150,17 +196,39 @@ make quality
 
 ## Generowanie projektu
 
-Generowanie projektu z minimalną konfiguracją:
+Aby wygenerować nowy projekt na podstawie tego szablonu, wykonaj następujące kroki:
 
 ```bash
-cookiecutter path/to/cookiecutter-project
+# Instalacja cookiecutter
+pip install cookiecutter
+
+# Generowanie projektu
+cookiecutter https://github.com/pyfunc/cookiecutter.git
 ```
 
----
+Następnie odpowiedz na pytania dotyczące konfiguracji projektu.
 
-2. **Oszczędność czasu** - szybkie tworzenie nowych projektów z gotowym zestawem narzędzi
-3. **Najlepsze praktyki** - wbudowane narzędzia zapewniające wysoką jakość kodu
-4. **Elastyczność** - możliwość wyboru komponentów i konfiguracji
+## Architektura modularna
+
+Wygenerowany projekt ma modularną architekturę, która pozwala na:
+
+1. **Niezależne komponenty**: Każdy serwis (gRPC, REST, MCP, MQTT, WebSocket) może działać jako niezależne repozytorium.
+2. **Niezależność językowa**: Usługi mogą być implementowane w różnych językach (Python, Go, itp.).
+3. **Minimalne zależności**: Każda usługa ma minimalne zależności od innych komponentów.
+4. **Standaryzowane interfejsy**: Jasne definicje kontraktów między komponentami.
+5. **Wspólne narzędzia**: Funkcjonalność wspólna dostępna, ale niewymagana.
+
+Szczegółowa dokumentacja architektury znajduje się w pliku `docs/modular_architecture.md`.
+
+## Integracja z LLM
+
+Projekt zawiera komponenty do integracji z dużymi modelami językowymi (LLM):
+
+1. **MCP (Model Context Protocol)**: Protokół do integracji z LLM jako narzędzie.
+2. **LangChain**: Integracja z bibliotekami LangChain do tworzenia aplikacji opartych na LLM.
+3. **MQTT i WebSocket**: Protokoły komunikacyjne do integracji z różnymi systemami.
+
+Szczegółowa dokumentacja integracji z LLM znajduje się w pliku `docs/llm_integration.md`.
 
 ## 6. Analiza optymalności dla generowania kodu
 

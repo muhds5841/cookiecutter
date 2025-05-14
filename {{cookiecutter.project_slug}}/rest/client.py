@@ -1,4 +1,4 @@
-"""\nKlient REST dla usługi Text-to-Speech.\n"""
+"""\nKlient REST dla usługi Process.\n"""
 
 import os
 import sys
@@ -18,8 +18,8 @@ from lib.config import load_config
 from lib.logging import get_logger, configure_logging
 
 
-class TtsClient:
-    """Klient REST dla usługi Text-to-Speech."""
+class ProcessClient:
+    """Klient REST dla usługi Process."""
     
     def __init__(self, base_url: str = "http://localhost:5000"):
         """Inicjalizuje klienta REST.
